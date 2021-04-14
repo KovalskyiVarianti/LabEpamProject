@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">LabEpamProject</string>
+    <string name="pokemon_header">Header</string>
 </resources>
