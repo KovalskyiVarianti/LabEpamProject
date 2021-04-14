@@ -3,6 +3,8 @@ package com.example.labepamproject.presentation
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.ViewModelProvider
+import androidx.recyclerview.widget.GridLayoutManager
+import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.labepamproject.R
 import com.example.labepamproject.databinding.ActivityMainBinding
@@ -23,11 +25,23 @@ class MainActivity : AppCompatActivity() {
 
         viewModel = MainViewModel()
         itemAdapter = ItemAdapter()
-
         viewModel.getPokemonList().observe(this) {
             itemAdapter.items = it
         }
         viewModel.loadItems()
-        findViewById<RecyclerView>(R.id.pokemon_list).adapter = itemAdapter
+        binding.pokemonList.layoutManager = provideGridLayoutManager()
+        binding.pokemonList.adapter = itemAdapter
+    }
+
+    private fun provideGridLayoutManager() : GridLayoutManager{
+        val manager = GridLayoutManager(this, 1)
+        manager.spanSizeLookup = object : GridLayoutManager.SpanSizeLookup() {
+            override fun getSpanSize(position: Int) = when (position) {
+                0 -> 1
+                else -> 1
+            }
+
+        }
+        return manager
     }
 }
