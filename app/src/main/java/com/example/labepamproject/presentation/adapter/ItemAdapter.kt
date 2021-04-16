@@ -6,13 +6,13 @@ import com.example.labepamproject.databinding.ItemPokemonBinding
 import com.hannesdorfmann.adapterdelegates4.ListDelegationAdapter
 import com.hannesdorfmann.adapterdelegates4.dsl.adapterDelegateViewBinding
 import com.squareup.picasso.Picasso
-import timber.log.Timber
 import kotlin.random.Random
 
-class ItemAdapter : ListDelegationAdapter<List<Item>>() {
+class ItemAdapter(pokemonClickListener: (Item.PokemonItem) -> Unit) :
+    ListDelegationAdapter<List<Item>>() {
     init {
         delegatesManager.addDelegate(headerAdapterDelegate())
-        delegatesManager.addDelegate(pokemonAdapterDelegate())
+        delegatesManager.addDelegate(pokemonAdapterDelegate(pokemonClickListener))
     }
 
     private fun headerAdapterDelegate() =
@@ -25,14 +25,20 @@ class ItemAdapter : ListDelegationAdapter<List<Item>>() {
 
         }
 
-    private fun pokemonAdapterDelegate() =
+    private fun pokemonAdapterDelegate(pokemonClickListener: (Item.PokemonItem) -> Unit) =
         adapterDelegateViewBinding<Item.PokemonItem, Item, ItemPokemonBinding>(
             { layoutInflater, parent -> ItemPokemonBinding.inflate(layoutInflater, parent, false) }
         ) {
+            val rnd = Random
+            binding.root.setOnClickListener {
+                binding.root.setCardBackgroundColor(
+                    Color.rgb(rnd.nextInt(256), rnd.nextInt(256), rnd.nextInt(256))
+                )
+                pokemonClickListener(item)
+            }
             bind {
-                val rnd = Random
-                binding.root.setBackgroundColor(
-                    Color.argb(255, rnd.nextInt(256), rnd.nextInt(256), rnd.nextInt(256))
+                binding.root.setCardBackgroundColor(
+                    Color.rgb(rnd.nextInt(256), rnd.nextInt(256), rnd.nextInt(256))
                 )
                 binding.pokemonName.text = item.name
                 Picasso.get().load(item.imgSrc).into(binding.pokemonImage)

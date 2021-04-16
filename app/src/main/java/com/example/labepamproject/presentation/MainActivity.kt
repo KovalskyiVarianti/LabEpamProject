@@ -1,6 +1,7 @@
 package com.example.labepamproject.presentation
 
 import android.os.Bundle
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.GridLayoutManager
@@ -8,6 +9,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.labepamproject.R
 import com.example.labepamproject.databinding.ActivityMainBinding
+import com.example.labepamproject.databinding.ItemPokemonBinding
 import com.example.labepamproject.presentation.adapter.ItemAdapter
 import timber.log.Timber
 
@@ -24,23 +26,26 @@ class MainActivity : AppCompatActivity() {
         setContentView(binding.root)
 
         viewModel = MainViewModel()
-        itemAdapter = ItemAdapter()
+        itemAdapter = ItemAdapter() {
+            Toast.makeText(this, it.name, Toast.LENGTH_SHORT).show()
+        }
+
         viewModel.getPokemonList().observe(this) {
             itemAdapter.items = it
         }
         viewModel.loadItems()
+
         binding.pokemonList.layoutManager = provideGridLayoutManager()
         binding.pokemonList.adapter = itemAdapter
     }
 
-    private fun provideGridLayoutManager() : GridLayoutManager{
-        val manager = GridLayoutManager(this, 1)
+    private fun provideGridLayoutManager(): GridLayoutManager {
+        val manager = GridLayoutManager(this, 3)
         manager.spanSizeLookup = object : GridLayoutManager.SpanSizeLookup() {
             override fun getSpanSize(position: Int) = when (position) {
-                0 -> 1
+                0 -> 3
                 else -> 1
             }
-
         }
         return manager
     }

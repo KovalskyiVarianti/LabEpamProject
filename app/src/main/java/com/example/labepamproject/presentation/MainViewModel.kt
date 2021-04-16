@@ -9,12 +9,13 @@ import com.example.labepamproject.presentation.adapter.Item
 import com.example.labepamproject.presentation.adapter.Item.PokemonItem.Companion.asItem
 
 
-class MainViewModel(private val repository: PokemonRepository = MockPokemonRepository()) : ViewModel() {
+class MainViewModel(private val repository: PokemonRepository = MockPokemonRepository()) :
+    ViewModel() {
 
     private val _pokemonListLiveData = MutableLiveData<List<Item>>()
-    fun getPokemonList() :LiveData<List<Item>> = _pokemonListLiveData
+    fun getPokemonList(): LiveData<List<Item>> = _pokemonListLiveData
 
-    fun loadItems(){
+    fun loadItems() {
         val itemList = mutableListOf<Item>()
         itemList.add(Item.HeaderItem("Header"))
         itemList.addAll(repository.getPokemons().map { it.asItem() })
