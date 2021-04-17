@@ -8,7 +8,7 @@ import com.hannesdorfmann.adapterdelegates4.dsl.adapterDelegateViewBinding
 import com.squareup.picasso.Picasso
 import kotlin.random.Random
 
-class ItemAdapter(pokemonClickListener: (Item.PokemonItem) -> Unit) :
+class ItemAdapter(pokemonClickListener: (Item.PokemonItem) -> Unit = {}) :
     ListDelegationAdapter<List<Item>>() {
     init {
         delegatesManager.addDelegate(headerAdapterDelegate())
@@ -29,17 +29,10 @@ class ItemAdapter(pokemonClickListener: (Item.PokemonItem) -> Unit) :
         adapterDelegateViewBinding<Item.PokemonItem, Item, ItemPokemonBinding>(
             { layoutInflater, parent -> ItemPokemonBinding.inflate(layoutInflater, parent, false) }
         ) {
-            val rnd = Random
             binding.root.setOnClickListener {
-                binding.root.setCardBackgroundColor(
-                    Color.rgb(rnd.nextInt(256), rnd.nextInt(256), rnd.nextInt(256))
-                )
                 pokemonClickListener(item)
             }
             bind {
-                binding.root.setCardBackgroundColor(
-                    Color.rgb(rnd.nextInt(256), rnd.nextInt(256), rnd.nextInt(256))
-                )
                 binding.pokemonName.text = item.name
                 Picasso.get().load(item.imgSrc).into(binding.pokemonImage)
             }

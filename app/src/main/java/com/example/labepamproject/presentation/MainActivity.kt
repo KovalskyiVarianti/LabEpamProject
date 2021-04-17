@@ -26,9 +26,7 @@ class MainActivity : AppCompatActivity() {
         setContentView(binding.root)
 
         viewModel = MainViewModel()
-        itemAdapter = ItemAdapter() {
-            Toast.makeText(this, it.name, Toast.LENGTH_SHORT).show()
-        }
+        itemAdapter = ItemAdapter()
 
         viewModel.getPokemonList().observe(this) {
             itemAdapter.items = it
@@ -40,10 +38,10 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun provideGridLayoutManager(): GridLayoutManager {
-        val manager = GridLayoutManager(this, 3)
+        val manager = GridLayoutManager(this, 2)
         manager.spanSizeLookup = object : GridLayoutManager.SpanSizeLookup() {
             override fun getSpanSize(position: Int) = when (position) {
-                0 -> 3
+                0 -> 2
                 else -> 1
             }
         }
