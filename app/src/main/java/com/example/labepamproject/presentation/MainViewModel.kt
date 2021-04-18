@@ -17,7 +17,7 @@ class MainViewModel(private val repository: PokemonRepository = MockPokemonRepos
 
     fun loadItems() {
         val itemList = mutableListOf<Item>()
-        itemList.add(Item.HeaderItem("Header"))
+        itemList.add(Item.HeaderItem("Pokemons"))
         itemList.addAll(repository.getPokemons().map { it.asItem() })
         _pokemonListLiveData.value = itemList
     }
