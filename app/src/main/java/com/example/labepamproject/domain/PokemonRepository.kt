@@ -1,5 +1,8 @@
 package com.example.labepamproject.domain
 
+import io.reactivex.Single
+
 interface PokemonRepository {
-    fun getPokemons(): List<Pokemon>
+    fun getPokemons(): Single<List<Pokemon>>
+    fun getPokemonByName(name: String) : Single<Pokemon>
 }

@@ -30,11 +30,15 @@ class MainActivity : AppCompatActivity() {
 
         viewModel.getPokemonList().observe(this) {
             itemAdapter.items = it
+            Timber.i(it.toString())
+            Timber.i("Data loaded into adapter")
         }
+
         viewModel.loadItems()
 
         binding.pokemonList.layoutManager = provideGridLayoutManager()
         binding.pokemonList.adapter = itemAdapter
+
     }
 
     private fun provideGridLayoutManager(): GridLayoutManager {
