@@ -1,6 +1,7 @@
 package com.example.labepamproject.data
 
 import com.example.labepamproject.data.network.PokedexApiService
+import com.example.labepamproject.domain.Generation
 import com.example.labepamproject.domain.Pokemon
 import com.example.labepamproject.domain.PokemonRepository
 import io.reactivex.Observable
@@ -29,6 +30,11 @@ class NetworkPokemonRepository(val api: PokedexApiService) : PokemonRepository {
                     weight = it.weight,
                 )
             }
+    }
+
+    override fun getGenerations(): Single<List<Generation>> {
+        return api.fetchGenerationList()
+            .map { listResponse -> listResponse.results.map { Generation(it.name) } }
     }
 
     private fun generateUrlFromId(id: Int): String =

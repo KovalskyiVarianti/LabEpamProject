@@ -33,7 +33,20 @@ interface PokedexApiService {
 
     @GET("pokemon/{name}")
     fun fetchPokemonInfo(@Path("name") name: String): Single<PokemonDetailedResponse>
+
+    @GET("generation")
+    fun fetchGenerationList(): Single<GenerationListResponse>
 }
+
+data class GenerationListResponse(
+    val count: Int,
+    val results: List<GenerationPartialResponse>
+)
+
+data class GenerationPartialResponse(
+    val name: String,
+    val url: String,
+)
 
 data class PokemonListResponse(
     val count: Int,

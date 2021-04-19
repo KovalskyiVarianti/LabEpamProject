@@ -1,5 +1,6 @@
 package com.example.labepamproject.presentation.adapter
 
+import com.example.labepamproject.domain.Generation
 import com.example.labepamproject.domain.Pokemon
 
 sealed class Item {
@@ -10,4 +11,8 @@ sealed class Item {
     }
 
     data class HeaderItem(val text: String) : Item()
+
+    data class GenerationItem(val text: String) : Item()
+
+    data class GenerationListItem(val generationList : List<GenerationItem>) : Item()
 }

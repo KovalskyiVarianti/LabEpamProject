@@ -43,7 +43,7 @@ class MainActivity : AppCompatActivity() {
 
     }
 
-    private fun showContent(contentList: List<Item>){
+    private fun showContent(contentList: List<Item>) {
         binding.stateImage.visibility = View.GONE
         itemAdapter.items = contentList
         Timber.d(contentList.joinToString { item -> "$item\n" })
@@ -65,6 +65,7 @@ class MainActivity : AppCompatActivity() {
         manager.spanSizeLookup = object : GridLayoutManager.SpanSizeLookup() {
             override fun getSpanSize(position: Int) = when (position) {
                 0 -> 2
+                1 -> 2
                 else -> 1
             }
         }

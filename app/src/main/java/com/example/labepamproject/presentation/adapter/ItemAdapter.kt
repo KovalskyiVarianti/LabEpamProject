@@ -1,6 +1,7 @@
 package com.example.labepamproject.presentation.adapter
 
 import androidx.recyclerview.widget.DiffUtil
+import com.example.labepamproject.databinding.ItemGenerationListBinding
 import com.example.labepamproject.databinding.ItemHeaderBinding
 import com.example.labepamproject.databinding.ItemPokemonBinding
 import com.hannesdorfmann.adapterdelegates4.AsyncListDifferDelegationAdapter
@@ -14,7 +15,24 @@ class ItemAdapter(pokemonClickListener: (Item.PokemonItem) -> Unit = {}) :
     init {
         delegatesManager.addDelegate(headerAdapterDelegate())
         delegatesManager.addDelegate(pokemonAdapterDelegate(pokemonClickListener))
+        delegatesManager.addDelegate(generationListAdapterDelegate())
     }
+
+    private fun generationListAdapterDelegate() =
+        adapterDelegateViewBinding<Item.GenerationListItem, Item, ItemGenerationListBinding>(
+            { layoutInflater, parent ->
+                ItemGenerationListBinding.inflate(
+                    layoutInflater, parent, false
+                )
+            }
+        ) {
+            val generationAdapter = GenerationListAdapter()
+            bind {
+                generationAdapter.items = item.generationList
+                binding.generationList.adapter = generationAdapter
+                Timber.i("GenerationList binded")
+            }
+        }
 
     private fun headerAdapterDelegate() =
         adapterDelegateViewBinding<Item.HeaderItem, Item, ItemHeaderBinding>(
@@ -24,6 +42,7 @@ class ItemAdapter(pokemonClickListener: (Item.PokemonItem) -> Unit = {}) :
                 binding.headerText.text = item.text
                 Timber.i("Header binded")
             }
+
         }
 
     private fun pokemonAdapterDelegate(pokemonClickListener: (Item.PokemonItem) -> Unit) =

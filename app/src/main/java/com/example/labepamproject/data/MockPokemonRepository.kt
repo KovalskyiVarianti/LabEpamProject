@@ -1,5 +1,6 @@
 package com.example.labepamproject.data
 
+import com.example.labepamproject.domain.Generation
 import com.example.labepamproject.domain.Pokemon
 import com.example.labepamproject.domain.PokemonRepository
 import io.reactivex.Single
@@ -27,6 +28,10 @@ class MockPokemonRepository : PokemonRepository {
     override fun getPokemons(): Single<List<Pokemon>> = Single.just(pokemonList)
 
     override fun getPokemonByName(name: String): Single<Pokemon> {
+        TODO("Not yet implemented")
+    }
+
+    override fun getGenerations(): Single<List<Generation>> {
         TODO("Not yet implemented")
     }
 
