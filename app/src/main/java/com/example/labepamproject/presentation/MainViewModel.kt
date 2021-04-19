@@ -3,7 +3,7 @@ package com.example.labepamproject.presentation
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import com.example.labepamproject.data.MockPokemonRepository
+import com.example.labepamproject.R
 import com.example.labepamproject.data.NetworkPokemonRepository
 import com.example.labepamproject.data.network.createPokedexApiService
 import com.example.labepamproject.domain.Pokemon
@@ -16,9 +16,11 @@ import io.reactivex.schedulers.Schedulers
 import timber.log.Timber
 
 
-class MainViewModel(private val repository: PokemonRepository = NetworkPokemonRepository(
-    createPokedexApiService
-)) :
+class MainViewModel(
+    private val repository: PokemonRepository = NetworkPokemonRepository(
+        createPokedexApiService
+    )
+) :
     ViewModel() {
 
     private lateinit var disposable: Disposable
@@ -26,27 +28,36 @@ class MainViewModel(private val repository: PokemonRepository = NetworkPokemonRe
     private val _pokemonListLiveData = MutableLiveData<List<Item>>()
     fun getPokemonList(): LiveData<List<Item>> = _pokemonListLiveData
 
-    fun loadItems() {
+    private val _state = MutableLiveData<MainViewState>()
+    fun getState(): LiveData<MainViewState> = _state
+
+    init {
+        loadItems()
+    }
+
+    private fun loadItems() {
+        _state.value = MainViewState.LoadingState(R.drawable.loading_animation)
         disposable = repository.getPokemons()
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe(
-                {
-                    showItems(it)
+                { pokemonList ->
+                    val content = provideContent(pokemonList)
+                    Timber.i("Values provided")
+                    _state.value = MainViewState.ResultState(content)
                     Timber.i("Items loading is successful")
                 },
                 {
-                    Timber.e(it)
+                    _state.value = MainViewState.ErrorState(R.drawable.ic_connection_error)
                 }
             )
     }
 
-    private fun showItems(pokemons: List<Pokemon>) {
+    private fun provideContent(pokemons: List<Pokemon>) : List<Item>{
         val itemList = mutableListOf<Item>()
         itemList.add(Item.HeaderItem("Pokemons"))
         itemList.addAll(pokemons.map { it.asItem() })
-        _pokemonListLiveData.postValue(itemList)
-        Timber.i("Values posted")
+        return itemList
     }
 
     override fun onCleared() {
