@@ -5,7 +5,6 @@ import com.hannesdorfmann.adapterdelegates4.ListDelegationAdapter
 import com.hannesdorfmann.adapterdelegates4.dsl.adapterDelegateViewBinding
 import timber.log.Timber
 import java.util.*
-import kotlin.IllegalArgumentException
 
 class GenerationListAdapter : ListDelegationAdapter<List<Item>>() {
     init {
@@ -24,7 +23,7 @@ class GenerationListAdapter : ListDelegationAdapter<List<Item>>() {
         ) {
             bind {
                 binding.generationName.text = adaptText(item.text)
-                Timber.i("Generation binded")
+                Timber.d("Generation $item binded")
             }
         }
 

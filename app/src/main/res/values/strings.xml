@@ -1,4 +1,5 @@
 <resources>
     <string name="app_name">Pokedex</string>
     <string name="pokemon_header">Header</string>
+    <string name="all_generations">All generations</string>
 </resources>

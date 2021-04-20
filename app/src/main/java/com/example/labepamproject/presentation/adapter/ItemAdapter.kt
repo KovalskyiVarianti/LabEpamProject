@@ -1,19 +1,18 @@
 package com.example.labepamproject.presentation.adapter
 
-import android.graphics.Color
 import androidx.recyclerview.widget.DiffUtil
 import com.example.labepamproject.databinding.ItemGenerationListBinding
 import com.example.labepamproject.databinding.ItemHeaderBinding
 import com.example.labepamproject.databinding.ItemPokemonBinding
 import com.hannesdorfmann.adapterdelegates4.AsyncListDifferDelegationAdapter
 import com.hannesdorfmann.adapterdelegates4.dsl.adapterDelegateViewBinding
-import com.squareup.picasso.Callback
 import com.squareup.picasso.Picasso
 import timber.log.Timber
-import java.lang.Exception
-import kotlin.random.Random
 
-class ItemAdapter(pokemonClickListener: (Item.PokemonItem) -> Unit = {}) :
+class ItemAdapter(
+    private val defaultGenerationItem: Item.GenerationItem,
+    pokemonClickListener: (Item.PokemonItem) -> Unit = {}
+) :
     AsyncListDifferDelegationAdapter<Item>(DiffCallback) {
 
     init {
@@ -30,14 +29,16 @@ class ItemAdapter(pokemonClickListener: (Item.PokemonItem) -> Unit = {}) :
                 )
             }
         ) {
-            val allGenerationsItem = Item.GenerationItem("All generations")
             val generationAdapter = GenerationListAdapter()
             bind {
-                generationAdapter.items = listOf(allGenerationsItem) + item.generationList
+                generationAdapter.items = adaptGenerationList(item.generationList)
                 binding.generationList.adapter = generationAdapter
-                Timber.i("GenerationList binded")
+                Timber.d("GenerationList binded")
             }
         }
+
+    private fun adaptGenerationList(generationItemList: List<Item.GenerationItem>) =
+        listOf(defaultGenerationItem) + generationItemList
 
     private fun headerAdapterDelegate() =
         adapterDelegateViewBinding<Item.HeaderItem, Item, ItemHeaderBinding>(
@@ -45,7 +46,7 @@ class ItemAdapter(pokemonClickListener: (Item.PokemonItem) -> Unit = {}) :
         ) {
             bind {
                 binding.headerText.text = item.text
-                Timber.i("Header binded")
+                Timber.d("Header binded")
             }
 
         }
@@ -57,18 +58,10 @@ class ItemAdapter(pokemonClickListener: (Item.PokemonItem) -> Unit = {}) :
             binding.root.setOnClickListener {
                 pokemonClickListener(item)
             }
-            val rnd = Random
-            binding.pokemonImage.setBackgroundColor(
-                Color.rgb(
-                    rnd.nextInt(256),
-                    rnd.nextInt(256),
-                    rnd.nextInt(256)
-                )
-            )
             bind {
                 binding.pokemonName.text = adaptPokemonName(item.name)
                 Picasso.get().load(item.imgSrc).into(binding.pokemonImage)
-                Timber.i("Pokemon binded")
+                Timber.d("Pokemon ${item.name} binded")
             }
         }
 
@@ -78,10 +71,12 @@ class ItemAdapter(pokemonClickListener: (Item.PokemonItem) -> Unit = {}) :
 
     companion object DiffCallback : DiffUtil.ItemCallback<Item>() {
         override fun areItemsTheSame(oldItem: Item, newItem: Item): Boolean {
+            Timber.d("itemsTheSame chech")
             return oldItem === newItem
         }
 
         override fun areContentsTheSame(oldItem: Item, newItem: Item): Boolean {
+            Timber.d("contentsTheSame check")
             return oldItem == newItem
         }
     }

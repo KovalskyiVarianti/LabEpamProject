@@ -36,6 +36,7 @@ class MainViewModel(
 
     private fun loadItems() {
         _state.value = MainViewState.LoadingState(R.drawable.loading_animation)
+        Timber.d("Current state: ${_state.value}")
         disposable = repository.getPokemons()
             .zipWith(repository.getGenerations(), { pokemons, generations ->
                 listOf(Item.GenerationListItem(generations.map { it.asItem() })) + pokemons.map { it.asItem() }
@@ -44,19 +45,21 @@ class MainViewModel(
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe(
                 { items ->
-                    Timber.i("Values provided")
                     _state.postValue(MainViewState.ResultState(items))
-                    Timber.i("Items loading is successful")
+                    Timber.d("Items loading is successful")
+                    Timber.d("Current state: ${_state.value}")
                 },
                 {
                     _state.value = MainViewState.ErrorState(R.drawable.ic_connection_error)
+                    Timber.d("Current state: ${_state.value}")
+                    Timber.e(it)
                 }
             )
     }
 
-
     override fun onCleared() {
         super.onCleared()
         disposable.dispose()
+        Timber.d("Resource is disposed")
     }
 }

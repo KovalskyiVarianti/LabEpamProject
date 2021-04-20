@@ -3,10 +3,12 @@ package com.example.labepamproject.presentation
 import android.content.res.Configuration
 import android.os.Bundle
 import android.view.View
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.GridLayoutManager
 import com.example.labepamproject.R
 import com.example.labepamproject.databinding.ActivityMainBinding
+import com.example.labepamproject.presentation.adapter.GenerationListAdapter
 import com.example.labepamproject.presentation.adapter.Item
 import com.example.labepamproject.presentation.adapter.ItemAdapter
 import timber.log.Timber
@@ -24,7 +26,9 @@ class MainActivity : AppCompatActivity() {
         setContentView(binding.root)
 
         viewModel = MainViewModel()
-        itemAdapter = ItemAdapter()
+        itemAdapter = ItemAdapter(provideGenerationDefaultItem()) {
+            Toast.makeText(this, it.name, Toast.LENGTH_SHORT).show()
+        }
 
         viewModel.getState().observe(this) { state ->
             when (state) {
@@ -77,6 +81,9 @@ class MainActivity : AppCompatActivity() {
         }
         return manager
     }
+
+    private fun provideGenerationDefaultItem() =
+        Item.GenerationItem(getString(R.string.all_generations))
 
     private fun List<Item>.provideHeader(stringID: Int) =
         listOf(Item.HeaderItem(getString(stringID))) + this
