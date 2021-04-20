@@ -53,7 +53,7 @@ class MainActivity : AppCompatActivity() {
         binding.stateImage.visibility = View.GONE
         itemAdapter.items = contentList.provideHeader(R.string.pokemon_header)
         Timber.d(contentList.joinToString { item -> "$item\n" })
-        Timber.i("Data loaded into adapter")
+        Timber.d("Data loaded into adapter")
     }
 
     private fun showErrorImage(errorImageId: Int) {
