@@ -11,7 +11,7 @@
         android:id="@+id/pokemon_list"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="#87DCF6"
+        android:background="@color/background_color"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -25,6 +25,7 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toTopOf="parent"
+        android:contentDescription="@string/loading_status" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

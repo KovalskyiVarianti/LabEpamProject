@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <dimen name="header_text_size">20sp</dimen>
+    <dimen name="header_margin">10dp</dimen>
+    <dimen name="generation_list_vertical_margin">5dp</dimen>
+    <dimen name="generation_text_margin">4dp</dimen>
+    <dimen name="generation_item_margin">5dp</dimen>
+    <dimen name="pokemon_corner_radius">20dp</dimen>
+    <dimen name="pokemon_item_margin">5dp</dimen>
+    <dimen name="image_cardview_margin">3dp</dimen>
+    <dimen name="image_text_bottom_margin">3dp</dimen>
+</resources>

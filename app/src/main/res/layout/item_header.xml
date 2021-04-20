@@ -3,16 +3,16 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:background="#D3FAF8">
+    android:background="@color/items_background_color">
 
 
     <TextView
         android:id="@+id/header_text"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_margin="10dp"
+        android:layout_margin="@dimen/header_margin"
         android:gravity="center_horizontal"
         android:textAlignment="center"
-        android:textSize="20sp"
+        android:textSize="@dimen/header_text_size"
         tools:text="Pokemons" />
 </LinearLayout><!--    android:background="#0085EFB5"-->

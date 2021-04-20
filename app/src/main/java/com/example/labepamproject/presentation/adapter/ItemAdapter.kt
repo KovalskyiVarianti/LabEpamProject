@@ -60,6 +60,7 @@ class ItemAdapter(
             }
             bind {
                 binding.pokemonName.text = adaptPokemonName(item.name)
+                binding.pokemonImage.contentDescription = item.name
                 Picasso.get().load(item.imgSrc).into(binding.pokemonImage)
                 Timber.d("Pokemon ${item.name} binded")
             }
