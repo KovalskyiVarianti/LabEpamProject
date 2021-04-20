@@ -12,7 +12,11 @@ sealed class Item {
 
     data class HeaderItem(val text: String) : Item()
 
-    data class GenerationItem(val text: String) : Item()
+    data class GenerationItem(val text: String) : Item() {
+        companion object {
+            fun Generation.asItem(): GenerationItem = GenerationItem(name)
+        }
+    }
 
-    data class GenerationListItem(val generationList : List<GenerationItem>) : Item()
+    data class GenerationListItem(val generationList: List<GenerationItem>) : Item()
 }

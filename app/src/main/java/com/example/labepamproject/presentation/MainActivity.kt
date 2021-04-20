@@ -4,6 +4,7 @@ import android.os.Bundle
 import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.GridLayoutManager
+import com.example.labepamproject.R
 import com.example.labepamproject.databinding.ActivityMainBinding
 import com.example.labepamproject.presentation.adapter.Item
 import com.example.labepamproject.presentation.adapter.ItemAdapter
@@ -45,7 +46,7 @@ class MainActivity : AppCompatActivity() {
 
     private fun showContent(contentList: List<Item>) {
         binding.stateImage.visibility = View.GONE
-        itemAdapter.items = contentList
+        itemAdapter.items = contentList.provideHeader(R.string.pokemon_header)
         Timber.d(contentList.joinToString { item -> "$item\n" })
         Timber.i("Data loaded into adapter")
     }
@@ -57,7 +58,7 @@ class MainActivity : AppCompatActivity() {
 
     private fun showLoadingImage(loadingImageId: Int) {
         binding.stateImage.visibility = View.VISIBLE
-        binding.stateImage.setImageResource(loadingImageId) //image
+        binding.stateImage.setImageResource(loadingImageId)
     }
 
     private fun provideGridLayoutManager(): GridLayoutManager {
@@ -71,4 +72,7 @@ class MainActivity : AppCompatActivity() {
         }
         return manager
     }
+
+    private fun List<Item>.provideHeader(stringID: Int) =
+        listOf(Item.HeaderItem(getString(stringID))) + this
 }

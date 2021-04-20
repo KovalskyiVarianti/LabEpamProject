@@ -26,9 +26,10 @@ class ItemAdapter(pokemonClickListener: (Item.PokemonItem) -> Unit = {}) :
                 )
             }
         ) {
+            val allGenerationsItem = Item.GenerationItem("All generations")
             val generationAdapter = GenerationListAdapter()
             bind {
-                generationAdapter.items = item.generationList
+                generationAdapter.items = listOf(allGenerationsItem) + item.generationList
                 binding.generationList.adapter = generationAdapter
                 Timber.i("GenerationList binded")
             }

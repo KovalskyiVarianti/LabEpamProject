@@ -10,6 +10,7 @@ import com.example.labepamproject.domain.Generation
 import com.example.labepamproject.domain.Pokemon
 import com.example.labepamproject.domain.PokemonRepository
 import com.example.labepamproject.presentation.adapter.Item
+import com.example.labepamproject.presentation.adapter.Item.GenerationItem.Companion.asItem
 import com.example.labepamproject.presentation.adapter.Item.PokemonItem.Companion.asItem
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
@@ -37,15 +38,14 @@ class MainViewModel(
         _state.value = MainViewState.LoadingState(R.drawable.loading_animation)
         disposable = repository.getPokemons()
             .zipWith(repository.getGenerations(), { pokemons, generations ->
-                pokemons to generations
+                listOf(Item.GenerationListItem(generations.map { it.asItem() })) + pokemons.map { it.asItem() }
             })
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe(
-                { itemsPair ->
-                    val content = provideContent(itemsPair.first, itemsPair.second)
+                { items ->
                     Timber.i("Values provided")
-                    _state.postValue(MainViewState.ResultState(content))
+                    _state.postValue(MainViewState.ResultState(items))
                     Timber.i("Items loading is successful")
                 },
                 {
@@ -54,13 +54,6 @@ class MainViewModel(
             )
     }
 
-    private fun provideContent(pokemons: List<Pokemon>, generations: List<Generation>): List<Item> {
-        val itemList = mutableListOf<Item>()
-        itemList.add(Item.HeaderItem("Pokemons"))
-        itemList.add(Item.GenerationListItem(generations.map { Item.GenerationItem(it.name) }))
-        itemList.addAll(pokemons.map { it.asItem() })
-        return itemList
-    }
 
     override fun onCleared() {
         super.onCleared()
