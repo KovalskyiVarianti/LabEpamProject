@@ -6,16 +6,17 @@
     android:layout_height="match_parent"
     tools:context=".presentation.MainActivity">
 
+
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/pokemon_list"
-        android:background="#87DCF6"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:background="#87DCF6"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        tools:listitem="@layout/item_pokemon"/>
+        tools:listitem="@layout/item_pokemon" />
 
     <ImageView
         android:id="@+id/state_image"

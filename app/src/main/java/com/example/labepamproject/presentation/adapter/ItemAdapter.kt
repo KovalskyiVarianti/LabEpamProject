@@ -1,13 +1,17 @@
 package com.example.labepamproject.presentation.adapter
 
+import android.graphics.Color
 import androidx.recyclerview.widget.DiffUtil
 import com.example.labepamproject.databinding.ItemGenerationListBinding
 import com.example.labepamproject.databinding.ItemHeaderBinding
 import com.example.labepamproject.databinding.ItemPokemonBinding
 import com.hannesdorfmann.adapterdelegates4.AsyncListDifferDelegationAdapter
 import com.hannesdorfmann.adapterdelegates4.dsl.adapterDelegateViewBinding
+import com.squareup.picasso.Callback
 import com.squareup.picasso.Picasso
 import timber.log.Timber
+import java.lang.Exception
+import kotlin.random.Random
 
 class ItemAdapter(pokemonClickListener: (Item.PokemonItem) -> Unit = {}) :
     AsyncListDifferDelegationAdapter<Item>(DiffCallback) {
@@ -53,12 +57,24 @@ class ItemAdapter(pokemonClickListener: (Item.PokemonItem) -> Unit = {}) :
             binding.root.setOnClickListener {
                 pokemonClickListener(item)
             }
+            val rnd = Random
+            binding.pokemonImage.setBackgroundColor(
+                Color.rgb(
+                    rnd.nextInt(256),
+                    rnd.nextInt(256),
+                    rnd.nextInt(256)
+                )
+            )
             bind {
-                binding.pokemonName.text = item.name
+                binding.pokemonName.text = adaptPokemonName(item.name)
                 Picasso.get().load(item.imgSrc).into(binding.pokemonImage)
                 Timber.i("Pokemon binded")
             }
         }
+
+    private fun adaptPokemonName(name: String) =
+        name.replaceFirst(name[0], name[0].toUpperCase())
+
 
     companion object DiffCallback : DiffUtil.ItemCallback<Item>() {
         override fun areItemsTheSame(oldItem: Item, newItem: Item): Boolean {

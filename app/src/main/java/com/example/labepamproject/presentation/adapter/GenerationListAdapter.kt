@@ -4,6 +4,7 @@ import com.example.labepamproject.databinding.ItemGenerationBinding
 import com.hannesdorfmann.adapterdelegates4.ListDelegationAdapter
 import com.hannesdorfmann.adapterdelegates4.dsl.adapterDelegateViewBinding
 import timber.log.Timber
+import java.util.*
 import kotlin.IllegalArgumentException
 
 class GenerationListAdapter : ListDelegationAdapter<List<Item>>() {
@@ -27,15 +28,5 @@ class GenerationListAdapter : ListDelegationAdapter<List<Item>>() {
             }
         }
 
-    private fun adaptText(text: String): String = when (text) {
-        "generation-i" -> "Generation 1"
-        "generation-ii" -> "Generation 2"
-        "generation-iii" -> "Generation 3"
-        "generation-iv" -> "Generation 4"
-        "generation-v" -> "Generation 5"
-        "generation-vi" -> "Generation 6"
-        "generation-vii" -> "Generation 7"
-        "generation-viii" -> "Generation 8"
-        else -> "All generations"
-    }
+    private fun adaptText(text: String): String = text.toUpperCase(Locale.ROOT)
 }

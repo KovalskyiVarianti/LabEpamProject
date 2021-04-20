@@ -5,13 +5,16 @@
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
     android:layout_margin="5dp"
-    app:cardBackgroundColor="#B4FBD0"
+    app:cardBackgroundColor="#c8fddf"
     app:cardCornerRadius="40dp">
+    <!--    app:cardBackgroundColor="#B4FBD0"-->
 
     <TextView
+
         android:id="@+id/generation_name"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_margin="5dp"
+        android:textColor="@color/black"
         tools:text="Some TeXt" />
 </androidx.cardview.widget.CardView>

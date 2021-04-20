@@ -1,5 +1,6 @@
 package com.example.labepamproject.presentation
 
+import android.content.res.Configuration
 import android.os.Bundle
 import android.view.View
 import androidx.appcompat.app.AppCompatActivity
@@ -62,11 +63,15 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun provideGridLayoutManager(): GridLayoutManager {
-        val manager = GridLayoutManager(this, 2)
+        val spanCount = when (resources.configuration.orientation) {
+            Configuration.ORIENTATION_LANDSCAPE -> 6
+            else -> 3
+        }
+        val manager = GridLayoutManager(this, spanCount)
         manager.spanSizeLookup = object : GridLayoutManager.SpanSizeLookup() {
             override fun getSpanSize(position: Int) = when (position) {
-                0 -> 2
-                1 -> 2
+                0 -> spanCount
+                1 -> spanCount
                 else -> 1
             }
         }
