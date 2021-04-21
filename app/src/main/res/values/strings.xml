@@ -4,4 +4,7 @@
     <string name="all_generations">All generations</string>
     <string name="pokemon_description">Pokemon</string>
     <string name="loading_status">Loading status</string>
+    <string name="menu_items_size">Items size</string>
+    <string name="menu_big_items">Big items</string>
+    <string name="menu_small_items">Small items</string>
 </resources>

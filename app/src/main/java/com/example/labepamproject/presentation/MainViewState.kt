@@ -1,6 +1,5 @@
 package com.example.labepamproject.presentation
 
-import android.media.Image
 import com.example.labepamproject.presentation.adapter.Item
 
 sealed class MainViewState {

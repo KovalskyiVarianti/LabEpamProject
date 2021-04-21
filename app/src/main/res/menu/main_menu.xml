@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <group>
+        <item
+            android:checkable="false"
+            android:enabled="false"
+            android:title="@string/menu_items_size" />
+        <item
+            android:id="@+id/Big_items"
+            android:title="@string/menu_big_items" />
+        <item
+            android:id="@+id/small_items"
+            android:title="@string/menu_small_items" />
+    </group>
+</menu>

@@ -6,14 +6,11 @@ import androidx.lifecycle.ViewModel
 import com.example.labepamproject.R
 import com.example.labepamproject.data.NetworkPokemonRepository
 import com.example.labepamproject.data.network.createPokedexApiService
-import com.example.labepamproject.domain.Generation
-import com.example.labepamproject.domain.Pokemon
 import com.example.labepamproject.domain.PokemonRepository
 import com.example.labepamproject.presentation.adapter.Item
 import com.example.labepamproject.presentation.adapter.Item.GenerationItem.Companion.asItem
 import com.example.labepamproject.presentation.adapter.Item.PokemonItem.Companion.asItem
 import io.reactivex.android.schedulers.AndroidSchedulers
-import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.disposables.Disposable
 import io.reactivex.schedulers.Schedulers
 import timber.log.Timber

@@ -1,17 +1,24 @@
 package com.example.labepamproject.presentation
 
+import android.content.Context
 import android.content.res.Configuration
 import android.os.Bundle
+import android.view.Menu
+import android.view.MenuItem
 import android.view.View
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.content.edit
 import androidx.recyclerview.widget.GridLayoutManager
 import com.example.labepamproject.R
 import com.example.labepamproject.databinding.ActivityMainBinding
-import com.example.labepamproject.presentation.adapter.GenerationListAdapter
 import com.example.labepamproject.presentation.adapter.Item
 import com.example.labepamproject.presentation.adapter.ItemAdapter
 import timber.log.Timber
+import kotlin.properties.Delegates
+
+private const val SPAN_COUNT_PORTRAIT = "SPAN_COUNT_PORTRAIT"
+private const val SPAN_COUNT_LANDSCAPE = "SPAN_COUNT_LANDSCAPE"
 
 class MainActivity : AppCompatActivity() {
 
@@ -19,12 +26,19 @@ class MainActivity : AppCompatActivity() {
     private lateinit var itemAdapter: ItemAdapter
     private lateinit var viewModel: MainViewModel
 
+    private var spanCountLandscape by Delegates.notNull<Int>()
+    private var spanCountPortrait by Delegates.notNull<Int>()
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate(layoutInflater)
         Timber.i("MainActivity created")
         setContentView(binding.root)
 
+        val preferences = getPreferences(Context.MODE_PRIVATE)
+        spanCountPortrait = preferences.getInt(SPAN_COUNT_PORTRAIT, 3)
+        spanCountLandscape = preferences.getInt(SPAN_COUNT_LANDSCAPE, 6)
+        Timber.d("(Load) SpanCountPortrait: $spanCountPortrait, SpanCountLandscape: $spanCountLandscape")
         viewModel = MainViewModel()
         itemAdapter = ItemAdapter(provideGenerationDefaultItem()) {
             Toast.makeText(this, it.name, Toast.LENGTH_SHORT).show()
@@ -49,6 +63,36 @@ class MainActivity : AppCompatActivity() {
 
     }
 
+    override fun onDestroy() {
+        getPreferences(Context.MODE_PRIVATE).edit {
+            putInt(SPAN_COUNT_PORTRAIT, spanCountPortrait)
+            putInt(SPAN_COUNT_LANDSCAPE, spanCountLandscape)
+            Timber.d("(Save) SpanCountPortrait: $spanCountPortrait, SpanCountLandscape: $spanCountLandscape")
+            apply()
+        }
+        super.onDestroy()
+    }
+
+    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
+        menuInflater.inflate(R.menu.main_menu, menu)
+        return true
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        when (item.itemId) {
+            R.id.Big_items -> {
+                spanCountPortrait = 2
+                spanCountLandscape = 4
+            }
+            R.id.small_items -> {
+                spanCountPortrait = 3
+                spanCountLandscape = 6
+            }
+        }
+        binding.pokemonList.layoutManager = provideGridLayoutManager()
+        return true
+    }
+
     private fun showContent(contentList: List<Item>) {
         binding.stateImage.visibility = View.GONE
         itemAdapter.items = contentList.provideHeader(R.string.pokemon_header)
@@ -68,8 +112,8 @@ class MainActivity : AppCompatActivity() {
 
     private fun provideGridLayoutManager(): GridLayoutManager {
         val spanCount = when (resources.configuration.orientation) {
-            Configuration.ORIENTATION_LANDSCAPE -> 6
-            else -> 3
+            Configuration.ORIENTATION_LANDSCAPE -> spanCountLandscape
+            else -> spanCountPortrait
         }
         val manager = GridLayoutManager(this, spanCount)
         manager.spanSizeLookup = object : GridLayoutManager.SpanSizeLookup() {

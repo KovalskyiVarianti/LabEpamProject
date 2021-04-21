@@ -1,7 +1,6 @@
 package com.example.labepamproject.data.network
 
 import com.squareup.moshi.Json
-import com.squareup.moshi.Moshi
 import io.reactivex.Single
 import retrofit2.Retrofit
 import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory
