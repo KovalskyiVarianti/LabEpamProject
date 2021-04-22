@@ -74,14 +74,17 @@ class PokemonOverviewFragment : Fragment() {
         spanCountLandscape = preferences.getInt(SPAN_COUNT_LANDSCAPE, SPAN_COUNT_LANDSCAPE_DEFAULT)
     }
 
-    override fun onDestroy() {
-        //REFACTORING REQUIRED
+    private fun saveGridLayoutManagerSettings(){
         requireActivity().getPreferences(Context.MODE_PRIVATE).edit {
             putInt(SPAN_COUNT_PORTRAIT, spanCountPortrait)
             putInt(SPAN_COUNT_LANDSCAPE, spanCountLandscape)
             Timber.d("(Save) SpanCountPortrait: $spanCountPortrait, SpanCountLandscape: $spanCountLandscape")
             apply()
         }
+    }
+
+    override fun onDestroy() {
+        saveGridLayoutManagerSettings()
         super.onDestroy()
     }
 

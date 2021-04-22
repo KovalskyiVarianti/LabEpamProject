@@ -6,7 +6,7 @@
     android:background="@color/items_background_color">
 
     <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/generation_list"
+        android:id="@+id/generation_overview_list"
         android:background="@color/items_background_color"
         android:layout_width="match_parent"
         android:layout_height="match_parent"

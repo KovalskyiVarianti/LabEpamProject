@@ -7,7 +7,7 @@
 
 
     <TextView
-        android:id="@+id/header_text"
+        android:id="@+id/header_overview_text"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_margin="@dimen/header_margin"
@@ -15,4 +15,4 @@
         android:textAlignment="center"
         android:textSize="@dimen/header_text_size"
         tools:text="Pokemons" />
-</LinearLayout><!--    android:background="#0085EFB5"-->
+</LinearLayout>
