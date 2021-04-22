@@ -1,6 +1,6 @@
 package com.example.labepamproject.presentation.overview.adapter
 
-import com.example.labepamproject.databinding.ItemGenerationBinding
+import com.example.labepamproject.databinding.ItemGenerationOverviewBinding
 import com.hannesdorfmann.adapterdelegates4.AsyncListDifferDelegationAdapter
 import com.hannesdorfmann.adapterdelegates4.dsl.adapterDelegateViewBinding
 import timber.log.Timber
@@ -13,9 +13,9 @@ class GenerationListAdapter(generationClickListener: (Int) -> Unit) :
     }
 
     private fun generationAdapterDelegate(generationClickListener: (Int) -> Unit) =
-        adapterDelegateViewBinding<Item.GenerationItem, Item, ItemGenerationBinding>(
+        adapterDelegateViewBinding<Item.GenerationItem, Item, ItemGenerationOverviewBinding>(
             { layoutInflater, parent ->
-                ItemGenerationBinding.inflate(
+                ItemGenerationOverviewBinding.inflate(
                     layoutInflater,
                     parent,
                     false
@@ -26,7 +26,7 @@ class GenerationListAdapter(generationClickListener: (Int) -> Unit) :
                 generationClickListener(getGenerationId(item.text))
             }
             bind {
-                binding.generationName.text = adaptText(item.text)
+                binding.generationOverviewName.text = adaptText(item.text)
                 Timber.d("Generation $item binded")
             }
         }

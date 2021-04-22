@@ -1,9 +1,9 @@
 package com.example.labepamproject.presentation.overview.adapter
 
 import androidx.recyclerview.widget.DiffUtil
-import com.example.labepamproject.databinding.ItemGenerationListBinding
-import com.example.labepamproject.databinding.ItemHeaderBinding
-import com.example.labepamproject.databinding.ItemPokemonBinding
+import com.example.labepamproject.databinding.ItemGenerationListOverviewBinding
+import com.example.labepamproject.databinding.ItemHeaderOverviewBinding
+import com.example.labepamproject.databinding.ItemPokemonOverviewBinding
 import com.hannesdorfmann.adapterdelegates4.AsyncListDifferDelegationAdapter
 import com.hannesdorfmann.adapterdelegates4.dsl.adapterDelegateViewBinding
 import com.squareup.picasso.Picasso
@@ -23,9 +23,9 @@ class ItemAdapter(
     }
 
     private fun generationListAdapterDelegate(generationClickListener: (Int) -> Unit) =
-        adapterDelegateViewBinding<Item.GenerationListItem, Item, ItemGenerationListBinding>(
+        adapterDelegateViewBinding<Item.GenerationListItem, Item, ItemGenerationListOverviewBinding>(
             { layoutInflater, parent ->
-                ItemGenerationListBinding.inflate(
+                ItemGenerationListOverviewBinding.inflate(
                     layoutInflater, parent, false
                 )
             }
@@ -33,7 +33,7 @@ class ItemAdapter(
             val generationAdapter = GenerationListAdapter(generationClickListener)
             bind {
                 generationAdapter.items = adaptGenerationList(item.generationList)
-                binding.generationList.adapter = generationAdapter
+                binding.generationOverviewList.adapter = generationAdapter
                 Timber.d("GenerationList binded")
             }
         }
@@ -42,27 +42,27 @@ class ItemAdapter(
         listOf(defaultGenerationItem) + generationItemList
 
     private fun headerAdapterDelegate() =
-        adapterDelegateViewBinding<Item.HeaderItem, Item, ItemHeaderBinding>(
-            { layoutInflater, parent -> ItemHeaderBinding.inflate(layoutInflater, parent, false) }
+        adapterDelegateViewBinding<Item.HeaderItem, Item, ItemHeaderOverviewBinding>(
+            { layoutInflater, parent -> ItemHeaderOverviewBinding.inflate(layoutInflater, parent, false) }
         ) {
             bind {
-                binding.headerText.text = item.text
+                binding.headerOverviewText.text = item.text
                 Timber.d("Header binded")
             }
 
         }
 
     private fun pokemonAdapterDelegate(pokemonClickListener: (Item.PokemonItem) -> Unit) =
-        adapterDelegateViewBinding<Item.PokemonItem, Item, ItemPokemonBinding>(
-            { layoutInflater, parent -> ItemPokemonBinding.inflate(layoutInflater, parent, false) }
+        adapterDelegateViewBinding<Item.PokemonItem, Item, ItemPokemonOverviewBinding>(
+            { layoutInflater, parent -> ItemPokemonOverviewBinding.inflate(layoutInflater, parent, false) }
         ) {
             binding.root.setOnClickListener {
                 pokemonClickListener(item)
             }
             bind {
-                binding.pokemonName.text = adaptPokemonName(item.name)
-                binding.pokemonImage.contentDescription = item.name
-                Picasso.get().load(item.imgSrc).into(binding.pokemonImage)
+                binding.pokemonOverviewName.text = adaptPokemonName(item.name)
+                binding.pokemonOverviewImage.contentDescription = item.name
+                Picasso.get().load(item.imgSrc).into(binding.pokemonOverviewImage)
                 Timber.d("Pokemon ${item.name} binded")
             }
         }
