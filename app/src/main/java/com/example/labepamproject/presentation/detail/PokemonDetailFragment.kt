@@ -17,6 +17,8 @@ class PokemonDetailFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View? {
         binding = FragmentPokemonDetailBinding.inflate(inflater, container, false)
+        binding.pokemonDetailName.text =
+            PokemonDetailFragmentArgs.fromBundle(requireArguments()).pokemonName
         return binding.root
     }
 }

@@ -27,6 +27,17 @@ class PokemonOverviewViewModel(
     private val _state = MutableLiveData<PokemonOverviewViewState>()
     fun getState(): LiveData<PokemonOverviewViewState> = _state
 
+    private val _navigateToPokemonDetailFragment = MutableLiveData<String>()
+    fun navigateToPokemonDetailFragment(): LiveData<String> = _navigateToPokemonDetailFragment
+
+    fun onPokemonItemClicked(name: String) {
+        _navigateToPokemonDetailFragment.value = name
+    }
+
+    fun onPokemonDetailFragmentNavigated() {
+        _navigateToPokemonDetailFragment.value = null
+    }
+
     init {
         loadItems()
     }

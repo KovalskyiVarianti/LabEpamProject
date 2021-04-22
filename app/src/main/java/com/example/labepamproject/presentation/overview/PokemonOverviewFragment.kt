@@ -3,9 +3,12 @@ package com.example.labepamproject.presentation.overview
 import android.content.Context
 import android.content.res.Configuration
 import android.os.Bundle
+import android.text.Layout
 import android.view.*
 import androidx.core.content.edit
 import androidx.fragment.app.Fragment
+import androidx.navigation.fragment.FragmentNavigator
+import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.GridLayoutManager
 import com.example.labepamproject.R
 import com.example.labepamproject.databinding.FragmentPokemonOverviewBinding
@@ -44,9 +47,19 @@ class PokemonOverviewFragment : Fragment() {
         viewModel = PokemonOverviewViewModel()
         itemAdapter = ItemAdapter(
             provideGenerationDefaultItem(),
-            pokemonClickListener = {},
+            pokemonClickListener = { viewModel.onPokemonItemClicked(it) },
             generationClickListener = {},
         )
+
+        viewModel.navigateToPokemonDetailFragment().observe(viewLifecycleOwner) { pokemonName ->
+            pokemonName?.let {
+                findNavController().navigate(
+                    PokemonOverviewFragmentDirections
+                        .actionPokemonOverviewFragmentToPokemonDetailFragment(pokemonName)
+                )
+                viewModel.onPokemonDetailFragmentNavigated()
+            }
+        }
 
         viewModel.getState().observe(viewLifecycleOwner) { state ->
             when (state) {
@@ -74,7 +87,7 @@ class PokemonOverviewFragment : Fragment() {
         spanCountLandscape = preferences.getInt(SPAN_COUNT_LANDSCAPE, SPAN_COUNT_LANDSCAPE_DEFAULT)
     }
 
-    private fun saveGridLayoutManagerSettings(){
+    private fun saveGridLayoutManagerSettings() {
         requireActivity().getPreferences(Context.MODE_PRIVATE).edit {
             putInt(SPAN_COUNT_PORTRAIT, spanCountPortrait)
             putInt(SPAN_COUNT_LANDSCAPE, spanCountLandscape)

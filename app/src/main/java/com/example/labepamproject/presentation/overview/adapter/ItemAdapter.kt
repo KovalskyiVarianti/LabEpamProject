@@ -11,7 +11,7 @@ import timber.log.Timber
 
 class ItemAdapter(
     private val defaultGenerationItem: Item.GenerationItem,
-    pokemonClickListener: (Item.PokemonItem) -> Unit = {},
+    pokemonClickListener: (String) -> Unit = {},
     generationClickListener: (Int) -> Unit = {},
 ) :
     AsyncListDifferDelegationAdapter<Item>(DiffCallback) {
@@ -52,12 +52,12 @@ class ItemAdapter(
 
         }
 
-    private fun pokemonAdapterDelegate(pokemonClickListener: (Item.PokemonItem) -> Unit) =
+    private fun pokemonAdapterDelegate(pokemonClickListener: (String) -> Unit) =
         adapterDelegateViewBinding<Item.PokemonItem, Item, ItemPokemonOverviewBinding>(
             { layoutInflater, parent -> ItemPokemonOverviewBinding.inflate(layoutInflater, parent, false) }
         ) {
             binding.root.setOnClickListener {
-                pokemonClickListener(item)
+                pokemonClickListener(item.name)
             }
             bind {
                 binding.pokemonOverviewName.text = adaptPokemonName(item.name)
