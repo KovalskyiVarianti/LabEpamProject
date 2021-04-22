@@ -1,4 +1,4 @@
-package com.example.labepamproject.presentation
+package com.example.labepamproject.presentation.overview
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
@@ -7,16 +7,16 @@ import com.example.labepamproject.R
 import com.example.labepamproject.data.NetworkPokemonRepository
 import com.example.labepamproject.data.network.createPokedexApiService
 import com.example.labepamproject.domain.PokemonRepository
-import com.example.labepamproject.presentation.adapter.Item
-import com.example.labepamproject.presentation.adapter.Item.GenerationItem.Companion.asItem
-import com.example.labepamproject.presentation.adapter.Item.PokemonItem.Companion.asItem
+import com.example.labepamproject.presentation.overview.adapter.Item
+import com.example.labepamproject.presentation.overview.adapter.Item.GenerationItem.Companion.asItem
+import com.example.labepamproject.presentation.overview.adapter.Item.PokemonItem.Companion.asItem
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.Disposable
 import io.reactivex.schedulers.Schedulers
 import timber.log.Timber
 
 
-class MainViewModel(
+class PokemonOverviewViewModel(
     private val repository: PokemonRepository = NetworkPokemonRepository(
         createPokedexApiService
     )
@@ -24,15 +24,15 @@ class MainViewModel(
     ViewModel() {
 
     private lateinit var disposable: Disposable
-    private val _state = MutableLiveData<MainViewState>()
-    fun getState(): LiveData<MainViewState> = _state
+    private val _state = MutableLiveData<PokemonOverviewViewState>()
+    fun getState(): LiveData<PokemonOverviewViewState> = _state
 
     init {
         loadItems()
     }
 
     private fun loadItems() {
-        _state.value = MainViewState.LoadingState(R.drawable.loading_animation)
+        _state.value = PokemonOverviewViewState.LoadingState(R.drawable.loading_animation)
         Timber.d("Current state: ${_state.value}")
         disposable = repository.getPokemons()
             .zipWith(repository.getGenerations(), { pokemons, generations ->
@@ -42,12 +42,13 @@ class MainViewModel(
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe(
                 { items ->
-                    _state.postValue(MainViewState.ResultState(items))
+                    _state.postValue(PokemonOverviewViewState.ResultState(items))
                     Timber.d("Items loading is successful")
                     Timber.d("Current state: ${_state.value}")
                 },
                 {
-                    _state.value = MainViewState.ErrorState(R.drawable.ic_connection_error)
+                    _state.value =
+                        PokemonOverviewViewState.ErrorState(R.drawable.ic_connection_error)
                     Timber.d("Current state: ${_state.value}")
                     Timber.e(it)
                 }

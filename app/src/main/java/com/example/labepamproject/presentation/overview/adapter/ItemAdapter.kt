@@ -1,4 +1,4 @@
-package com.example.labepamproject.presentation.adapter
+package com.example.labepamproject.presentation.overview.adapter
 
 import androidx.recyclerview.widget.DiffUtil
 import com.example.labepamproject.databinding.ItemGenerationListBinding
@@ -11,17 +11,18 @@ import timber.log.Timber
 
 class ItemAdapter(
     private val defaultGenerationItem: Item.GenerationItem,
-    pokemonClickListener: (Item.PokemonItem) -> Unit = {}
+    pokemonClickListener: (Item.PokemonItem) -> Unit = {},
+    generationClickListener: (Int) -> Unit = {},
 ) :
     AsyncListDifferDelegationAdapter<Item>(DiffCallback) {
 
     init {
         delegatesManager.addDelegate(headerAdapterDelegate())
         delegatesManager.addDelegate(pokemonAdapterDelegate(pokemonClickListener))
-        delegatesManager.addDelegate(generationListAdapterDelegate())
+        delegatesManager.addDelegate(generationListAdapterDelegate(generationClickListener))
     }
 
-    private fun generationListAdapterDelegate() =
+    private fun generationListAdapterDelegate(generationClickListener: (Int) -> Unit) =
         adapterDelegateViewBinding<Item.GenerationListItem, Item, ItemGenerationListBinding>(
             { layoutInflater, parent ->
                 ItemGenerationListBinding.inflate(
@@ -29,7 +30,7 @@ class ItemAdapter(
                 )
             }
         ) {
-            val generationAdapter = GenerationListAdapter()
+            val generationAdapter = GenerationListAdapter(generationClickListener)
             bind {
                 generationAdapter.items = adaptGenerationList(item.generationList)
                 binding.generationList.adapter = generationAdapter

@@ -1,4 +1,4 @@
-package com.example.labepamproject.presentation.adapter
+package com.example.labepamproject.presentation.overview.adapter
 
 import com.example.labepamproject.domain.Generation
 import com.example.labepamproject.domain.Pokemon
