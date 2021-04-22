@@ -1,13 +1,13 @@
 package com.example.labepamproject.presentation.overview.adapter
 
 import com.example.labepamproject.databinding.ItemGenerationBinding
-import com.hannesdorfmann.adapterdelegates4.ListDelegationAdapter
+import com.hannesdorfmann.adapterdelegates4.AsyncListDifferDelegationAdapter
 import com.hannesdorfmann.adapterdelegates4.dsl.adapterDelegateViewBinding
 import timber.log.Timber
 import java.util.*
 
 class GenerationListAdapter(generationClickListener: (Int) -> Unit) :
-    ListDelegationAdapter<List<Item>>() {
+    AsyncListDifferDelegationAdapter<Item>(ItemAdapter.DiffCallback) {
     init {
         delegatesManager.addDelegate(generationAdapterDelegate(generationClickListener))
     }
@@ -43,5 +43,5 @@ class GenerationListAdapter(generationClickListener: (Int) -> Unit) :
         else -> 0
     }
 
-    fun adaptText(text: String): String = text.toUpperCase(Locale.ROOT)
+    private fun adaptText(text: String): String = text.toUpperCase(Locale.ROOT)
 }
