@@ -2,7 +2,7 @@
 <resources>
     <dimen name="header_text_size">20sp</dimen>
     <dimen name="header_margin">10dp</dimen>
-    <dimen name="generation_list_vertical_margin">5dp</dimen>
+    <dimen name="generation_list_vertical_margin">1dp</dimen>
     <dimen name="generation_text_margin">4dp</dimen>
     <dimen name="generation_item_margin">5dp</dimen>
     <dimen name="pokemon_corner_radius">20dp</dimen>
