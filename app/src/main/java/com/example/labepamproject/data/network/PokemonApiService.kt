@@ -26,7 +26,7 @@ interface PokedexApiService {
 
     @GET("pokemon")
     fun fetchPokemonList(
-        @Query("limit") limit: Int = 20,
+        @Query("limit") limit: Int = 24,
         @Query("offset") offset: Int = 0
     ): Single<PokemonListResponse>
 
@@ -60,7 +60,7 @@ data class PokemonPartialResponse(
 data class PokemonDetailedResponse(
     val id: Int,
     val name: String,
-    @Json(name = "base_experience") val experience: Int,
+    @field:Json(name = "base_experience") val experience: Int,
     val height: Int,
     val weight: Int,
 )

@@ -25,6 +25,10 @@ class PokemonOverviewFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View {
         binding = FragmentPokemonOverviewBinding.inflate(layoutInflater, container, false)
+        return binding.root
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         setHasOptionsMenu(true)
         viewModel = PokemonOverviewViewModel()
         itemAdapter = ItemAdapter(
@@ -60,7 +64,7 @@ class PokemonOverviewFragment : Fragment() {
         binding.pokemonList.layoutManager = provideGridLayoutManager(getSpanCount())
         binding.pokemonList.adapter = itemAdapter
 
-        return binding.root
+
     }
 
     private fun provideGridLayoutManager(spanCount: Int): GridLayoutManager {
