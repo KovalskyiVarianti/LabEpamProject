@@ -1,10 +1,8 @@
 package com.example.labepamproject.presentation.overview
 
-import android.content.Context
 import android.content.res.Configuration
 import android.os.Bundle
 import android.view.*
-import androidx.core.content.edit
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.GridLayoutManager
@@ -13,25 +11,12 @@ import com.example.labepamproject.databinding.FragmentPokemonOverviewBinding
 import com.example.labepamproject.presentation.overview.adapter.Item
 import com.example.labepamproject.presentation.overview.adapter.ItemAdapter
 import timber.log.Timber
-import kotlin.properties.Delegates
-
-//REFACTORING REQUIRED
-private const val SPAN_COUNT_PORTRAIT = "SPAN_COUNT_PORTRAIT"
-private const val SPAN_COUNT_LANDSCAPE = "SPAN_COUNT_LANDSCAPE"
-
-//REFACTORING REQUIRED
-private const val SPAN_COUNT_PORTRAIT_DEFAULT = 3
-private const val SPAN_COUNT_LANDSCAPE_DEFAULT = 6
 
 class PokemonOverviewFragment : Fragment() {
 
     private lateinit var binding: FragmentPokemonOverviewBinding
     private lateinit var itemAdapter: ItemAdapter
     private lateinit var viewModel: PokemonOverviewViewModel
-
-    //REFACTORING REQUIRED
-    private var spanCountLandscape by Delegates.notNull<Int>()
-    private var spanCountPortrait by Delegates.notNull<Int>()
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -40,8 +25,6 @@ class PokemonOverviewFragment : Fragment() {
     ): View {
         binding = FragmentPokemonOverviewBinding.inflate(layoutInflater, container, false)
         setHasOptionsMenu(true)
-        readGridLayoutManagerSettings()
-        Timber.d("(Load) SpanCountPortrait: $spanCountPortrait, SpanCountLandscape: $spanCountLandscape")
         viewModel = PokemonOverviewViewModel()
         itemAdapter = ItemAdapter(
             provideGenerationDefaultItem(),
@@ -62,43 +45,24 @@ class PokemonOverviewFragment : Fragment() {
         viewModel.getState().observe(viewLifecycleOwner) { state ->
             when (state) {
                 is PokemonOverviewViewState.LoadingState -> {
-                    showLoadingImage(state.loadingImageId)
+                    showLoadingBar()
                 }
                 is PokemonOverviewViewState.ResultState -> {
                     showContent(state.items)
                 }
                 is PokemonOverviewViewState.ErrorState -> {
-                    showErrorImage(state.errorImageId)
+                    showErrorImage(state.errorMessage)
                 }
             }
         }
 
-        binding.pokemonList.layoutManager = provideGridLayoutManager()
+        binding.pokemonList.layoutManager = provideGridLayoutManager(getSpanCount())
         binding.pokemonList.adapter = itemAdapter
 
         return binding.root
     }
 
-    private fun readGridLayoutManagerSettings() {
-        val preferences = requireActivity().getPreferences(Context.MODE_PRIVATE)
-        spanCountPortrait = preferences.getInt(SPAN_COUNT_PORTRAIT, SPAN_COUNT_PORTRAIT_DEFAULT)
-        spanCountLandscape = preferences.getInt(SPAN_COUNT_LANDSCAPE, SPAN_COUNT_LANDSCAPE_DEFAULT)
-    }
-
-    private fun saveGridLayoutManagerSettings() {
-        requireActivity().getPreferences(Context.MODE_PRIVATE).edit {
-            putInt(SPAN_COUNT_PORTRAIT, spanCountPortrait)
-            putInt(SPAN_COUNT_LANDSCAPE, spanCountLandscape)
-            Timber.d("(Save) SpanCountPortrait: $spanCountPortrait, SpanCountLandscape: $spanCountLandscape")
-            apply()
-        }
-    }
-
-    private fun provideGridLayoutManager(): GridLayoutManager {
-        val spanCount = when (resources.configuration.orientation) {
-            Configuration.ORIENTATION_LANDSCAPE -> spanCountLandscape
-            else -> spanCountPortrait
-        }
+    private fun provideGridLayoutManager(spanCount : Int): GridLayoutManager {
         val manager = GridLayoutManager(activity, spanCount)
         manager.spanSizeLookup = object : GridLayoutManager.SpanSizeLookup() {
             override fun getSpanSize(position: Int) = when (position) {
@@ -110,9 +74,9 @@ class PokemonOverviewFragment : Fragment() {
         return manager
     }
 
-    override fun onDestroy() {
-        saveGridLayoutManagerSettings()
-        super.onDestroy()
+    private fun getSpanCount() = when (resources.configuration.orientation) {
+        Configuration.ORIENTATION_PORTRAIT -> 3
+        else -> 6
     }
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
@@ -122,37 +86,30 @@ class PokemonOverviewFragment : Fragment() {
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         when (item.itemId) {
-            R.id.big_items -> {
-                spanCountPortrait = 2
-                spanCountLandscape = 4
-            }
-            R.id.small_items -> {
-                spanCountPortrait = 3
-                spanCountLandscape = 6
-            }
             R.id.settings -> {
 
             }
         }
-        binding.pokemonList.layoutManager = provideGridLayoutManager()
         return true
     }
 
     private fun showContent(contentList: List<Item>) {
-        binding.stateImage.visibility = View.GONE
+        binding.loadingStateBar.visibility = View.GONE
+        binding.errorStateImage.visibility = View.GONE
         itemAdapter.items = contentList.provideHeader(R.string.pokemon_header)
         Timber.d(contentList.joinToString { item -> "$item\n" })
         Timber.d("Data loaded into adapter")
     }
 
-    private fun showErrorImage(errorImageId: Int) {
-        binding.stateImage.visibility = View.VISIBLE
-        binding.stateImage.setImageResource(errorImageId)
+    private fun showErrorImage(errorMessage: String) {
+        binding.loadingStateBar.visibility = View.GONE
+        binding.errorStateImage.text = errorMessage
+        binding.errorStateImage.visibility = View.VISIBLE
     }
 
-    private fun showLoadingImage(loadingImageId: Int) {
-        binding.stateImage.visibility = View.VISIBLE
-        binding.stateImage.setImageResource(loadingImageId)
+    private fun showLoadingBar() {
+        binding.loadingStateBar.visibility = View.VISIBLE
+        binding.errorStateImage.visibility = View.GONE
     }
 
     private fun provideGenerationDefaultItem() =

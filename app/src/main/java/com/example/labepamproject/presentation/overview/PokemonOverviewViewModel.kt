@@ -6,6 +6,8 @@ import androidx.lifecycle.ViewModel
 import com.example.labepamproject.R
 import com.example.labepamproject.data.NetworkPokemonRepository
 import com.example.labepamproject.data.network.createPokedexApiService
+import com.example.labepamproject.domain.Generation
+import com.example.labepamproject.domain.Pokemon
 import com.example.labepamproject.domain.PokemonRepository
 import com.example.labepamproject.presentation.overview.adapter.Item
 import com.example.labepamproject.presentation.overview.adapter.Item.GenerationItem.Companion.asItem
@@ -43,27 +45,41 @@ class PokemonOverviewViewModel(
     }
 
     private fun loadItems() {
-        _state.value = PokemonOverviewViewState.LoadingState(R.drawable.loading_animation)
-        Timber.d("Current state: ${_state.value}")
-        disposable = repository.getPokemons()
-            .zipWith(repository.getGenerations(), { pokemons, generations ->
-                listOf(Item.GenerationListItem(generations.map { it.asItem() })) + pokemons.map { it.asItem() }
-            })
+        onLoadState()
+        disposable = repository.getGenerations()
+            .zipWith(repository.getPokemons(), this::mergeItems)
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe(
                 { items ->
-                    _state.postValue(PokemonOverviewViewState.ResultState(items))
-                    Timber.d("Items loading is successful")
-                    Timber.d("Current state: ${_state.value}")
+                    onResultState(items)
                 },
-                {
-                    _state.value =
-                        PokemonOverviewViewState.ErrorState(R.drawable.ic_connection_error)
-                    Timber.d("Current state: ${_state.value}")
-                    Timber.e(it)
+                { error ->
+                    onErrorState(error)
                 }
             )
+    }
+
+    private fun onResultState(items: List<Item>) {
+        _state.postValue(PokemonOverviewViewState.ResultState(items))
+        Timber.d("Items loading is successful")
+        Timber.d("Current state: ${_state.value}")
+    }
+
+    private fun onLoadState() {
+        _state.value = PokemonOverviewViewState.LoadingState
+        Timber.d("Current state: ${_state.value}")
+    }
+
+    private fun onErrorState(error: Throwable) {
+        _state.value =
+            PokemonOverviewViewState.ErrorState("$error")
+        Timber.d("Current state: ${_state.value}")
+        Timber.e(error)
+    }
+
+    private fun mergeItems(generations: List<Generation>, pokemons: List<Pokemon>): List<Item> {
+        return listOf(Item.GenerationListItem(generations.map { it.asItem() })) + pokemons.map { it.asItem() }
     }
 
     override fun onCleared() {
