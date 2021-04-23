@@ -3,11 +3,9 @@ package com.example.labepamproject.presentation.overview
 import android.content.Context
 import android.content.res.Configuration
 import android.os.Bundle
-import android.text.Layout
 import android.view.*
 import androidx.core.content.edit
 import androidx.fragment.app.Fragment
-import androidx.navigation.fragment.FragmentNavigator
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.GridLayoutManager
 import com.example.labepamproject.R
@@ -96,6 +94,22 @@ class PokemonOverviewFragment : Fragment() {
         }
     }
 
+    private fun provideGridLayoutManager(): GridLayoutManager {
+        val spanCount = when (resources.configuration.orientation) {
+            Configuration.ORIENTATION_LANDSCAPE -> spanCountLandscape
+            else -> spanCountPortrait
+        }
+        val manager = GridLayoutManager(activity, spanCount)
+        manager.spanSizeLookup = object : GridLayoutManager.SpanSizeLookup() {
+            override fun getSpanSize(position: Int) = when (position) {
+                0 -> spanCount
+                1 -> spanCount
+                else -> 1
+            }
+        }
+        return manager
+    }
+
     override fun onDestroy() {
         saveGridLayoutManagerSettings()
         super.onDestroy()
@@ -108,13 +122,16 @@ class PokemonOverviewFragment : Fragment() {
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         when (item.itemId) {
-            R.id.Big_items -> {
+            R.id.big_items -> {
                 spanCountPortrait = 2
                 spanCountLandscape = 4
             }
             R.id.small_items -> {
                 spanCountPortrait = 3
                 spanCountLandscape = 6
+            }
+            R.id.settings -> {
+
             }
         }
         binding.pokemonList.layoutManager = provideGridLayoutManager()
@@ -136,22 +153,6 @@ class PokemonOverviewFragment : Fragment() {
     private fun showLoadingImage(loadingImageId: Int) {
         binding.stateImage.visibility = View.VISIBLE
         binding.stateImage.setImageResource(loadingImageId)
-    }
-
-    private fun provideGridLayoutManager(): GridLayoutManager {
-        val spanCount = when (resources.configuration.orientation) {
-            Configuration.ORIENTATION_LANDSCAPE -> spanCountLandscape
-            else -> spanCountPortrait
-        }
-        val manager = GridLayoutManager(activity, spanCount)
-        manager.spanSizeLookup = object : GridLayoutManager.SpanSizeLookup() {
-            override fun getSpanSize(position: Int) = when (position) {
-                0 -> spanCount
-                1 -> spanCount
-                else -> 1
-            }
-        }
-        return manager
     }
 
     private fun provideGenerationDefaultItem() =

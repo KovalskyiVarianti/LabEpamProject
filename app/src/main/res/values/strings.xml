@@ -7,4 +7,5 @@
     <string name="menu_items_size">Items size</string>
     <string name="menu_big_items">Big items</string>
     <string name="menu_small_items">Small items</string>
+    <string name="settings">Settings</string>
 </resources>

@@ -6,10 +6,13 @@
             android:enabled="false"
             android:title="@string/menu_items_size" />
         <item
-            android:id="@+id/Big_items"
+            android:id="@+id/big_items"
             android:title="@string/menu_big_items" />
         <item
             android:id="@+id/small_items"
             android:title="@string/menu_small_items" />
     </group>
+    <item
+        android:id="@+id/settings"
+        android:title="@string/settings" />
 </menu>
