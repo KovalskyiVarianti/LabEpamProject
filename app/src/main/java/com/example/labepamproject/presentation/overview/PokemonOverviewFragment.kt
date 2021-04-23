@@ -6,6 +6,7 @@ import android.view.*
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.GridLayoutManager
+import com.bumptech.glide.Glide
 import com.example.labepamproject.R
 import com.example.labepamproject.databinding.FragmentPokemonOverviewBinding
 import com.example.labepamproject.presentation.overview.adapter.Item
@@ -45,13 +46,13 @@ class PokemonOverviewFragment : Fragment() {
         viewModel.getState().observe(viewLifecycleOwner) { state ->
             when (state) {
                 is PokemonOverviewViewState.LoadingState -> {
-                    showLoadingBar()
+                    showLoadingAnimation()
                 }
                 is PokemonOverviewViewState.ResultState -> {
                     showContent(state.items)
                 }
                 is PokemonOverviewViewState.ErrorState -> {
-                    showErrorImage(state.errorMessage)
+                    showErrorMessage(state.errorMessage)
                 }
             }
         }
@@ -62,7 +63,7 @@ class PokemonOverviewFragment : Fragment() {
         return binding.root
     }
 
-    private fun provideGridLayoutManager(spanCount : Int): GridLayoutManager {
+    private fun provideGridLayoutManager(spanCount: Int): GridLayoutManager {
         val manager = GridLayoutManager(activity, spanCount)
         manager.spanSizeLookup = object : GridLayoutManager.SpanSizeLookup() {
             override fun getSpanSize(position: Int) = when (position) {
@@ -94,22 +95,27 @@ class PokemonOverviewFragment : Fragment() {
     }
 
     private fun showContent(contentList: List<Item>) {
-        binding.loadingStateBar.visibility = View.GONE
-        binding.errorStateImage.visibility = View.GONE
+        //binding.loadingStateBar.visibility = View.GONE
+        binding.loadingStateImage.visibility = View.GONE
+        binding.errorMessage.visibility = View.GONE
         itemAdapter.items = contentList.provideHeader(R.string.pokemon_header)
-        Timber.d(contentList.joinToString { item -> "$item\n" })
         Timber.d("Data loaded into adapter")
     }
 
-    private fun showErrorImage(errorMessage: String) {
-        binding.loadingStateBar.visibility = View.GONE
-        binding.errorStateImage.text = errorMessage
-        binding.errorStateImage.visibility = View.VISIBLE
+    private fun showErrorMessage(errorMessage: String) {
+        binding.loadingStateImage.visibility = View.GONE
+        //binding.loadingStateBar.visibility = View.GONE
+        binding.errorMessage.text = errorMessage
+        binding.errorMessage.visibility = View.VISIBLE
     }
 
-    private fun showLoadingBar() {
-        binding.loadingStateBar.visibility = View.VISIBLE
-        binding.errorStateImage.visibility = View.GONE
+    private fun showLoadingAnimation() {
+        Glide.with(binding.loadingStateImage.context)
+            .asGif()
+            .load(R.drawable.loading_anim)
+            .into(binding.loadingStateImage)
+        binding.loadingStateImage.visibility = View.VISIBLE
+        binding.errorMessage.visibility = View.GONE
     }
 
     private fun provideGenerationDefaultItem() =
