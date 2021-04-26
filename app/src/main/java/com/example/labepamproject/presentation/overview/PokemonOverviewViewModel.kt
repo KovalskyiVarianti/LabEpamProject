@@ -3,11 +3,10 @@ package com.example.labepamproject.presentation.overview
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import com.example.labepamproject.R
 import com.example.labepamproject.data.NetworkPokemonRepository
 import com.example.labepamproject.data.network.createPokedexApiService
-import com.example.labepamproject.domain.Generation
-import com.example.labepamproject.domain.Pokemon
+import com.example.labepamproject.domain.GenerationEntity
+import com.example.labepamproject.domain.PokemonEntity
 import com.example.labepamproject.domain.PokemonRepository
 import com.example.labepamproject.presentation.overview.adapter.Item
 import com.example.labepamproject.presentation.overview.adapter.Item.GenerationItem.Companion.asItem
@@ -78,8 +77,11 @@ class PokemonOverviewViewModel(
         Timber.e(error)
     }
 
-    private fun mergeItems(generations: List<Generation>, pokemons: List<Pokemon>): List<Item> {
-        return listOf(Item.GenerationListItem(generations.map { it.asItem() })) + pokemons.map { it.asItem() }
+    private fun mergeItems(
+        generationEntities: List<GenerationEntity>,
+        pokemonEntities: List<PokemonEntity>
+    ): List<Item> {
+        return listOf(Item.GenerationListItem(generationEntities.map { it.asItem() })) + pokemonEntities.map { it.asItem() }
     }
 
     override fun onCleared() {

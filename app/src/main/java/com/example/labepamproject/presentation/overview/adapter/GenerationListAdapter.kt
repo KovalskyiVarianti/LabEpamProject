@@ -24,6 +24,7 @@ class GenerationListAdapter(generationClickListener: (Int) -> Unit) :
         ) {
             binding.root.setOnClickListener {
                 generationClickListener(getGenerationId(item.text))
+                Timber.d("$")
             }
             bind {
                 binding.generationOverviewName.text = adaptText(item.text)

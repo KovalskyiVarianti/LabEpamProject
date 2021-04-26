@@ -9,7 +9,7 @@ import androidx.fragment.app.Fragment
 import com.bumptech.glide.Glide
 import com.example.labepamproject.R
 import com.example.labepamproject.databinding.FragmentPokemonDetailBinding
-import com.example.labepamproject.domain.Pokemon
+import com.example.labepamproject.domain.PokemonEntity
 
 class PokemonDetailFragment : Fragment() {
 
@@ -34,7 +34,7 @@ class PokemonDetailFragment : Fragment() {
                     //showLoadingAnimation()
                 }
                 is PokemonDetailViewState.ResultState -> {
-                    showContent(state.pokemon)
+                    showContent(state.pokemonEntity)
                 }
                 is PokemonDetailViewState.ErrorState -> {
                     //showErrorMessage(state.errorMessage)
@@ -43,18 +43,21 @@ class PokemonDetailFragment : Fragment() {
         }
     }
 
-    private fun showContent(pokemon: Pokemon) {
-        binding.pokemonDetailImage.loadImage(pokemon.prevImgUrl)
-        binding.pokemonDetailName.text = "${pokemon.name}\n" +
-                "${pokemon.height}\n" +
-                "${pokemon.weight}\n" +
-                "${pokemon.experience}"
+    private fun showContent(pokemonEntity: PokemonEntity) {
+        binding.pokemonDetailImage.loadImage(pokemonEntity.prevImgUrl)
+        binding.pokemonDetailName.text = "name: ${pokemonEntity.name}\n" +
+                "height: ${pokemonEntity.height}\n" +
+                "weight: ${pokemonEntity.weight}\n" +
+                "experience: ${pokemonEntity.experience}\n" +
+                "abilities: ${pokemonEntity.abilities.joinToString { it }}\n" +
+                "stats: ${pokemonEntity.stats.joinToString { it.toString() }}\n" +
+                "types: ${pokemonEntity.types.joinToString { it }}\n"
     }
 
-    private fun ImageView.loadImage(url: String) {
+    private fun ImageView.loadImage(url: String) =
         Glide.with(context)
             .load(url)
             .placeholder(R.drawable.loading_image_placeholder)
             .into(this)
-    }
+
 }

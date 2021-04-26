@@ -1,12 +1,12 @@
 package com.example.labepamproject.presentation.overview.adapter
 
-import com.example.labepamproject.domain.Generation
-import com.example.labepamproject.domain.Pokemon
+import com.example.labepamproject.domain.GenerationEntity
+import com.example.labepamproject.domain.PokemonEntity
 
 sealed class Item {
     data class PokemonItem(val name: String, val imgSrc: String) : Item() {
         companion object {
-            fun Pokemon.asItem(): PokemonItem = PokemonItem(name, prevImgUrl)
+            fun PokemonEntity.asItem(): PokemonItem = PokemonItem(name, prevImgUrl)
         }
     }
 
@@ -14,7 +14,7 @@ sealed class Item {
 
     data class GenerationItem(val text: String) : Item() {
         companion object {
-            fun Generation.asItem(): GenerationItem = GenerationItem(name)
+            fun GenerationEntity.asItem(): GenerationItem = GenerationItem(name)
         }
     }
 

@@ -60,11 +60,8 @@ class PokemonOverviewFragment : Fragment() {
                 }
             }
         }
-
         binding.pokemonList.layoutManager = provideGridLayoutManager(getSpanCount())
         binding.pokemonList.adapter = itemAdapter
-
-
     }
 
     private fun provideGridLayoutManager(spanCount: Int): GridLayoutManager {

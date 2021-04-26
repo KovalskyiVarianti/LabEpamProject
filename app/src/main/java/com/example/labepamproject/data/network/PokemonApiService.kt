@@ -1,6 +1,5 @@
 package com.example.labepamproject.data.network
 
-import com.squareup.moshi.Json
 import io.reactivex.Single
 import retrofit2.Retrofit
 import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory
@@ -27,7 +26,7 @@ interface PokedexApiService {
     @GET("pokemon")
     fun fetchPokemonList(
         @Query("limit") limit: Int = 24,
-        @Query("offset") offset: Int = 0
+        @Query("offset") offset: Int = 0,
     ): Single<PokemonListResponse>
 
     @GET("pokemon/{name}")
@@ -36,31 +35,3 @@ interface PokedexApiService {
     @GET("generation")
     fun fetchGenerationList(): Single<GenerationListResponse>
 }
-
-data class GenerationListResponse(
-    val count: Int,
-    val results: List<GenerationPartialResponse>
-)
-
-data class GenerationPartialResponse(
-    val name: String,
-    val url: String,
-)
-
-data class PokemonListResponse(
-    val count: Int,
-    val results: List<PokemonPartialResponse>,
-)
-
-data class PokemonPartialResponse(
-    val name: String,
-    val url: String
-)
-
-data class PokemonDetailedResponse(
-    val id: Int,
-    val name: String,
-    @field:Json(name = "base_experience") val experience: Int,
-    val height: Int,
-    val weight: Int,
-)

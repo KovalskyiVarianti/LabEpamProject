@@ -1,14 +1,14 @@
 package com.example.labepamproject.data
 
 import com.example.labepamproject.data.network.PokedexApiService
-import com.example.labepamproject.domain.Generation
-import com.example.labepamproject.domain.Pokemon
+import com.example.labepamproject.domain.GenerationEntity
+import com.example.labepamproject.domain.PokemonEntity
 import com.example.labepamproject.domain.PokemonRepository
 import io.reactivex.Observable
 import io.reactivex.Single
 
 class NetworkPokemonRepository(val api: PokedexApiService) : PokemonRepository {
-    override fun getPokemons(): Single<List<Pokemon>> {
+    override fun getPokemons(): Single<List<PokemonEntity>> {
         return api.fetchPokemonList()
             .flatMap { pokemonList ->
                 Observable.fromIterable(pokemonList.results)
@@ -18,23 +18,29 @@ class NetworkPokemonRepository(val api: PokedexApiService) : PokemonRepository {
             }
     }
 
-    override fun getPokemonByName(name: String): Single<Pokemon> {
+    override fun getPokemonByName(name: String): Single<PokemonEntity> {
         return api.fetchPokemonInfo(name)
-            .map {
-                Pokemon(
-                    id = it.id,
-                    name = it.name,
-                    prevImgUrl = generateUrlFromId(it.id),
-                    experience = it.experience,
-                    height = it.height,
-                    weight = it.weight,
+            .map { pokemonResponse ->
+                val abilities = pokemonResponse.abilities.map { it.ability.name }
+                val stats = pokemonResponse.stats.map { it.stat.name to it.base_stat }
+                val types = pokemonResponse.types.map { it.type.name }
+                PokemonEntity(
+                    id = pokemonResponse.id,
+                    name = pokemonResponse.name,
+                    prevImgUrl = generateUrlFromId(pokemonResponse.id),
+                    experience = pokemonResponse.experience,
+                    height = pokemonResponse.height,
+                    weight = pokemonResponse.weight,
+                    abilities = abilities,
+                    stats = stats,
+                    types = types,
                 )
             }
     }
 
-    override fun getGenerations(): Single<List<Generation>> {
+    override fun getGenerations(): Single<List<GenerationEntity>> {
         return api.fetchGenerationList()
-            .map { listResponse -> listResponse.results.map { Generation(it.name) } }
+            .map { listResponse -> listResponse.results.map { GenerationEntity(it.name) } }
     }
 
     private fun generateUrlFromId(id: Int): String =
