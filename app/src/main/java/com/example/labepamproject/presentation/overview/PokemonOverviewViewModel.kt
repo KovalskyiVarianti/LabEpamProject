@@ -3,17 +3,15 @@ package com.example.labepamproject.presentation.overview
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import com.example.labepamproject.data.NetworkPokemonRepository
 import com.example.labepamproject.data.network.createPokedexApiService
-import com.example.labepamproject.domain.GenerationEntity
-import com.example.labepamproject.domain.PokemonEntity
 import com.example.labepamproject.domain.PokemonRepository
+import com.example.labepamproject.domain.Result
 import com.example.labepamproject.presentation.overview.adapter.Item
 import com.example.labepamproject.presentation.overview.adapter.Item.GenerationItem.Companion.asItem
 import com.example.labepamproject.presentation.overview.adapter.Item.PokemonItem.Companion.asItem
-import io.reactivex.android.schedulers.AndroidSchedulers
-import io.reactivex.disposables.Disposable
-import io.reactivex.schedulers.Schedulers
+import kotlinx.coroutines.launch
 import timber.log.Timber
 
 
@@ -24,7 +22,13 @@ class PokemonOverviewViewModel(
 ) :
     ViewModel() {
 
-    private lateinit var disposable: Disposable
+    private val data: MutableList<Item> = mutableListOf()
+
+    fun loadData(list: List<Item>): List<Item> {
+        data.addAll(list)
+        return data.toList()
+    }
+
     private val _state = MutableLiveData<PokemonOverviewViewState>()
     fun getState(): LiveData<PokemonOverviewViewState> = _state
 
@@ -45,22 +49,44 @@ class PokemonOverviewViewModel(
 
     private fun loadItems() {
         onLoadState()
-        disposable = repository.getGenerations()
-            .zipWith(repository.getPokemons(), this::mergeItems)
-            .subscribeOn(Schedulers.io())
-            .observeOn(AndroidSchedulers.mainThread())
-            .subscribe(
-                { items ->
-                    onResultState(items)
-                },
-                { error ->
-                    onErrorState(error)
-                }
-            )
+        viewModelScope.launch {
+            loadGenerations()
+            loadPokemons()
+            onLoadingFinishedState()
+        }
     }
 
+    private suspend fun loadPokemons() {
+        when (val result = repository.getPokemons()) {
+            is Result.Success -> {
+                val pokemonItem = result.data.map { it.asItem() }
+                onResultState(pokemonItem)
+            }
+            is Result.Error -> {
+                Timber.e(result.exception)
+                onErrorState(result.exception)
+            }
+        }
+    }
+
+    private suspend fun loadGenerations() {
+        when (val result = repository.getGenerations()) {
+            is Result.Success -> {
+                val generationListItem = Item.GenerationListItem(result.data.map { it.asItem() })
+                onResultState(listOf(generationListItem).provideHeader("Head"))
+            }
+            is Result.Error -> {
+                Timber.e(result.exception)
+                onErrorState(result.exception)
+            }
+        }
+    }
+
+    private fun List<Item>.provideHeader(text: String) =
+        listOf(Item.HeaderItem(text)) + this
+
     private fun onResultState(items: List<Item>) {
-        _state.postValue(PokemonOverviewViewState.ResultState(items))
+        _state.value = (PokemonOverviewViewState.ResultState(items))
         Timber.d("Items loading is successful")
         Timber.d("Current state: ${_state.value}")
     }
@@ -77,16 +103,8 @@ class PokemonOverviewViewModel(
         Timber.e(error)
     }
 
-    private fun mergeItems(
-        generationEntities: List<GenerationEntity>,
-        pokemonEntities: List<PokemonEntity>
-    ): List<Item> {
-        return listOf(Item.GenerationListItem(generationEntities.map { it.asItem() })) + pokemonEntities.map { it.asItem() }
-    }
-
-    override fun onCleared() {
-        super.onCleared()
-        disposable.dispose()
-        Timber.d("Resource is disposed")
+    private fun onLoadingFinishedState() {
+        _state.value = PokemonOverviewViewState.LoadingFinishedState
+        Timber.d("Current state: ${_state.value}")
     }
 }

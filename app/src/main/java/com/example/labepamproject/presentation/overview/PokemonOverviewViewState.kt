@@ -6,4 +6,5 @@ sealed class PokemonOverviewViewState {
     object LoadingState : PokemonOverviewViewState()
     data class ErrorState(val errorMessage: String) : PokemonOverviewViewState()
     data class ResultState(val items: List<Item>) : PokemonOverviewViewState()
+    object LoadingFinishedState : PokemonOverviewViewState()
 }

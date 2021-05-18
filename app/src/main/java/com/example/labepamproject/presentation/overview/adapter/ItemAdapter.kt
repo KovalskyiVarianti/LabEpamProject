@@ -1,5 +1,6 @@
 package com.example.labepamproject.presentation.overview.adapter
 
+import android.graphics.Color
 import android.widget.ImageView
 import androidx.recyclerview.widget.DiffUtil
 import com.bumptech.glide.Glide
@@ -10,6 +11,7 @@ import com.example.labepamproject.databinding.ItemPokemonOverviewBinding
 import com.hannesdorfmann.adapterdelegates4.AsyncListDifferDelegationAdapter
 import com.hannesdorfmann.adapterdelegates4.dsl.adapterDelegateViewBinding
 import timber.log.Timber
+import kotlin.random.Random
 
 class ItemAdapter(
     private val defaultGenerationItem: Item.GenerationItem,
@@ -74,6 +76,14 @@ class ItemAdapter(
                 pokemonClickListener(item.name)
             }
             bind {
+                val rnd = Random
+                binding.pokemonOverviewImage.setBackgroundColor(
+                    Color.rgb(
+                        rnd.nextInt(256),
+                        rnd.nextInt(256),
+                        rnd.nextInt(256)
+                    )
+                )
                 binding.pokemonOverviewName.text = adaptPokemonName(item.name)
                 binding.pokemonOverviewImage.loadImage(item.imgSrc)
                 Timber.d("Pokemon ${item.name} binded")

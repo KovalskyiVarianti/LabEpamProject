@@ -53,13 +53,17 @@ class PokemonOverviewFragment : Fragment() {
                     showLoadingAnimation()
                 }
                 is PokemonOverviewViewState.ResultState -> {
-                    showContent(state.items)
+                    loadContent(state.items)
                 }
                 is PokemonOverviewViewState.ErrorState -> {
                     showErrorMessage(state.errorMessage)
                 }
+                is PokemonOverviewViewState.LoadingFinishedState -> {
+                    showContent()
+                }
             }
         }
+
         binding.pokemonList.layoutManager = provideGridLayoutManager(getSpanCount())
         binding.pokemonList.adapter = itemAdapter
     }
@@ -95,17 +99,13 @@ class PokemonOverviewFragment : Fragment() {
         return true
     }
 
-    private fun showContent(contentList: List<Item>) {
-        //binding.loadingStateBar.visibility = View.GONE
-        binding.loadingStateImage.visibility = View.GONE
-        binding.errorMessage.visibility = View.GONE
-        itemAdapter.items = contentList.provideHeader(R.string.pokemon_header)
+    private fun loadContent(contentList: List<Item>) {
+        itemAdapter.items = viewModel.loadData(contentList)
         Timber.d("Data loaded into adapter")
     }
 
     private fun showErrorMessage(errorMessage: String) {
         binding.loadingStateImage.visibility = View.GONE
-        //binding.loadingStateBar.visibility = View.GONE
         binding.errorMessage.text = errorMessage
         binding.errorMessage.visibility = View.VISIBLE
     }
@@ -119,9 +119,12 @@ class PokemonOverviewFragment : Fragment() {
         binding.errorMessage.visibility = View.GONE
     }
 
+    private fun showContent() {
+        binding.loadingStateImage.visibility = View.GONE
+        binding.errorMessage.visibility = View.GONE
+    }
+
     private fun provideGenerationDefaultItem() =
         Item.GenerationItem(getString(R.string.all_generations))
 
-    private fun List<Item>.provideHeader(stringID: Int) =
-        listOf(Item.HeaderItem(getString(stringID))) + this
 }

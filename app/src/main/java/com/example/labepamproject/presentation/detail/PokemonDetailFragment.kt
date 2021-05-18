@@ -50,8 +50,8 @@ class PokemonDetailFragment : Fragment() {
                 "weight: ${pokemonEntity.weight}\n" +
                 "experience: ${pokemonEntity.experience}\n" +
                 "abilities: ${pokemonEntity.abilities.joinToString { it }}\n" +
-                "stats: ${pokemonEntity.stats.joinToString { it.toString() }}\n" +
-                "types: ${pokemonEntity.types.joinToString { it }}\n"
+                "types: ${pokemonEntity.types.joinToString { it }}\n" +
+                "stats: ${pokemonEntity.stats.joinToString { it.first }}\n"
     }
 
     private fun ImageView.loadImage(url: String) =

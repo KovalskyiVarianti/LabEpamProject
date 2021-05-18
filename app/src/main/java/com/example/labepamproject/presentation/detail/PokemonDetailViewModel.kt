@@ -3,12 +3,14 @@ package com.example.labepamproject.presentation.detail
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import com.example.labepamproject.data.NetworkPokemonRepository
 import com.example.labepamproject.data.network.createPokedexApiService
+import com.example.labepamproject.domain.PokemonEntity
 import com.example.labepamproject.domain.PokemonRepository
-import io.reactivex.android.schedulers.AndroidSchedulers
-import io.reactivex.disposables.Disposable
-import io.reactivex.schedulers.Schedulers
+import com.example.labepamproject.domain.Result
+import kotlinx.coroutines.launch
+import timber.log.Timber
 
 class PokemonDetailViewModel(
     private val pokemonName: String,
@@ -16,7 +18,6 @@ class PokemonDetailViewModel(
         createPokedexApiService
     )
 ) : ViewModel() {
-    private lateinit var disposable: Disposable
     private val _state = MutableLiveData<PokemonDetailViewState>()
     fun getState(): LiveData<PokemonDetailViewState> = _state
 
@@ -25,19 +26,35 @@ class PokemonDetailViewModel(
     }
 
     private fun loadDetailedData() {
-        _state.value = PokemonDetailViewState.LoadingState
-        disposable = repository.getPokemonByName(pokemonName)
-            .subscribeOn(Schedulers.io())
-            .observeOn(AndroidSchedulers.mainThread())
-            .subscribe({ pokemon ->
-                _state.value = PokemonDetailViewState.ResultState(pokemon)
-            }, { error ->
-                _state.value = PokemonDetailViewState.ErrorState("$error")
-            })
+        onLoadState()
+        viewModelScope.launch {
+            when (val result = repository.getPokemonByName(pokemonName)) {
+                is Result.Success -> {
+                    onResultState(result.data)
+                }
+                is Result.Error -> {
+                    Timber.e(result.exception)
+                    onErrorState(result.exception)
+                }
+            }
+        }
     }
 
-    override fun onCleared() {
-        super.onCleared()
-        disposable.dispose()
+    private fun onResultState(pokemon: PokemonEntity) {
+        _state.value = (PokemonDetailViewState.ResultState(pokemon))
+        Timber.d("Items loading is successful")
+        Timber.d("Current state: ${_state.value}")
+    }
+
+    private fun onLoadState() {
+        _state.value = PokemonDetailViewState.LoadingState
+        Timber.d("Current state: ${_state.value}")
+    }
+
+    private fun onErrorState(error: Throwable) {
+        _state.value =
+            PokemonDetailViewState.ErrorState("$error")
+        Timber.d("Current state: ${_state.value}")
+        Timber.e(error)
     }
 }
