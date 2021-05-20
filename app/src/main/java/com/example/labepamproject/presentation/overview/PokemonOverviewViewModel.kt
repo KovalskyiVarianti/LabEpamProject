@@ -11,6 +11,7 @@ import com.example.labepamproject.domain.Result
 import com.example.labepamproject.presentation.overview.adapter.Item
 import com.example.labepamproject.presentation.overview.adapter.Item.GenerationItem.Companion.asItem
 import com.example.labepamproject.presentation.overview.adapter.Item.PokemonItem.Companion.asItem
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import timber.log.Timber
 
@@ -21,7 +22,7 @@ class PokemonOverviewViewModel(
     )
 ) :
     ViewModel() {
-
+    private var currentOffset: Int = 0
     private val data: MutableList<Item> = mutableListOf()
 
     fun loadData(list: List<Item>): List<Item> {
@@ -56,8 +57,8 @@ class PokemonOverviewViewModel(
         }
     }
 
-    private suspend fun loadPokemons() {
-        when (val result = repository.getPokemons()) {
+    private suspend fun loadPokemons(limit: Int = 24, offset: Int = 0) {
+        when (val result = repository.getPokemons(limit, offset)) {
             is Result.Success -> {
                 val pokemonItem = result.data.map { it.asItem() }
                 onResultState(pokemonItem)
@@ -69,7 +70,17 @@ class PokemonOverviewViewModel(
         }
     }
 
+    fun loadNextPokemons() {
+        currentOffset += 24
+        onLoadState()
+        viewModelScope.launch {
+            loadPokemons(offset = currentOffset)
+            onLoadingFinishedState()
+        }
+    }
+
     private suspend fun loadGenerations() {
+        delay(2000)
         when (val result = repository.getGenerations()) {
             is Result.Success -> {
                 val generationListItem = Item.GenerationListItem(result.data.map { it.asItem() })

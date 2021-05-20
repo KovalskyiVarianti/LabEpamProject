@@ -11,17 +11,18 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 
 class NetworkPokemonRepository(val api: PokedexApiService) : PokemonRepository {
-    override suspend fun getPokemons(): Result<List<PokemonEntity>> = withContext(Dispatchers.IO) {
-        try {
-            val pokemonNameList = api.fetchPokemonList().results.map { it.name }
-            val pokemonDetailList = pokemonNameList.map { name ->
-                api.fetchPokemonInfo(name).toEntity()
+    override suspend fun getPokemons(limit: Int, offset: Int): Result<List<PokemonEntity>> =
+        withContext(Dispatchers.IO) {
+            try {
+                val pokemonNameList = api.fetchPokemonList(limit, offset).results.map { it.name }
+                val pokemonDetailList = pokemonNameList.map { name ->
+                    api.fetchPokemonInfo(name).toEntity()
+                }
+                Result.Success(pokemonDetailList)
+            } catch (e: Exception) {
+                Result.Error(e)
             }
-            Result.Success(pokemonDetailList)
-        } catch (e: Exception) {
-            Result.Error(e)
         }
-    }
 
     override suspend fun getPokemonByName(name: String): Result<PokemonEntity> =
         withContext(Dispatchers.IO) {

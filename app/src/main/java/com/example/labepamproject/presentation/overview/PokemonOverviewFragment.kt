@@ -6,6 +6,8 @@ import android.view.*
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.GridLayoutManager
+import androidx.recyclerview.widget.RecyclerView
+import androidx.recyclerview.widget.RecyclerView.SCROLL_STATE_IDLE
 import com.bumptech.glide.Glide
 import com.example.labepamproject.R
 import com.example.labepamproject.databinding.FragmentPokemonOverviewBinding
@@ -36,7 +38,6 @@ class PokemonOverviewFragment : Fragment() {
             pokemonClickListener = { viewModel.onPokemonItemClicked(it) },
             generationClickListener = {},
         )
-
         viewModel.navigateToPokemonDetailFragment().observe(viewLifecycleOwner) { pokemonName ->
             pokemonName?.let {
                 findNavController().navigate(
@@ -63,9 +64,35 @@ class PokemonOverviewFragment : Fragment() {
                 }
             }
         }
+        provideRecyclerView(getSpanCount())
+    }
 
-        binding.pokemonList.layoutManager = provideGridLayoutManager(getSpanCount())
-        binding.pokemonList.adapter = itemAdapter
+    private fun provideRecyclerView(spanCount: Int) {
+        binding.pokemonList.apply {
+            layoutManager = provideGridLayoutManager(spanCount)
+            adapter = itemAdapter
+            addOnScrollListener(object : RecyclerView.OnScrollListener() {
+                override fun onScrollStateChanged(recyclerView: RecyclerView, newState: Int) {
+                    super.onScrollStateChanged(recyclerView, newState)
+                    if (newState == SCROLL_STATE_IDLE) {
+                        val itemCount = getItemCount(recyclerView)
+                        val currentItemNumber = getCurrentItemNumber(recyclerView)
+                        Timber.d("$itemCount, $currentItemNumber")
+                        if (itemCount == currentItemNumber) {
+                            viewModel.loadNextPokemons()
+                        }
+                    }
+                }
+
+                private fun getItemCount(recyclerView: RecyclerView) =
+                    recyclerView.adapter?.itemCount
+
+                private fun getCurrentItemNumber(recyclerView: RecyclerView): Int {
+                    val layoutManager = recyclerView.layoutManager as GridLayoutManager
+                    return layoutManager.findLastCompletelyVisibleItemPosition() + 1
+                }
+            })
+        }
     }
 
     private fun provideGridLayoutManager(spanCount: Int): GridLayoutManager {
@@ -97,6 +124,11 @@ class PokemonOverviewFragment : Fragment() {
             }
         }
         return true
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        //binding = null
     }
 
     private fun loadContent(contentList: List<Item>) {
