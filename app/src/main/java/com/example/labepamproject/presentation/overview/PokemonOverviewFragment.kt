@@ -2,7 +2,10 @@ package com.example.labepamproject.presentation.overview
 
 import android.content.res.Configuration
 import android.os.Bundle
-import android.view.*
+import android.view.Menu
+import android.view.MenuInflater
+import android.view.MenuItem
+import android.view.View
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.GridLayoutManager
@@ -13,87 +16,96 @@ import com.example.labepamproject.R
 import com.example.labepamproject.databinding.FragmentPokemonOverviewBinding
 import com.example.labepamproject.presentation.overview.adapter.Item
 import com.example.labepamproject.presentation.overview.adapter.ItemAdapter
+import org.koin.androidx.viewmodel.ext.android.viewModel
 import timber.log.Timber
 
-class PokemonOverviewFragment : Fragment() {
+const val ITEMS_PER_PAGE: Int = 24
+const val SPAN_COUNT_PORTRAIT: Int = 3
+const val SPAN_COUNT_LANDSCAPE: Int = 6
+
+class PokemonOverviewFragment : Fragment(R.layout.fragment_pokemon_overview) {
 
     private lateinit var binding: FragmentPokemonOverviewBinding
     private lateinit var itemAdapter: ItemAdapter
-    private lateinit var viewModel: PokemonOverviewViewModel
-
-    override fun onCreateView(
-        inflater: LayoutInflater,
-        container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View {
-        binding = FragmentPokemonOverviewBinding.inflate(layoutInflater, container, false)
-        return binding.root
-    }
+    private val viewModel: PokemonOverviewViewModel by viewModel()
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         setHasOptionsMenu(true)
-        viewModel = PokemonOverviewViewModel()
-        itemAdapter = ItemAdapter(
-            provideGenerationDefaultItem(),
-            pokemonClickListener = { viewModel.onPokemonItemClicked(it) },
-            generationClickListener = {},
-        )
-        viewModel.navigateToPokemonDetailFragment().observe(viewLifecycleOwner) { pokemonName ->
-            pokemonName?.let {
-                findNavController().navigate(
-                    PokemonOverviewFragmentDirections
-                        .actionPokemonOverviewFragmentToPokemonDetailFragment(pokemonName)
-                )
-                viewModel.onPokemonDetailFragmentNavigated()
-            }
-        }
+        binding = FragmentPokemonOverviewBinding.bind(view)
+        provideViewModel()
+        provideRecyclerView(getSpanCountByOrientation(resources.configuration.orientation))
+        viewModel.fetch()
+    }
 
-        viewModel.getState().observe(viewLifecycleOwner) { state ->
-            when (state) {
-                is PokemonOverviewViewState.LoadingState -> {
-                    showLoadingAnimation()
-                }
-                is PokemonOverviewViewState.ResultState -> {
-                    loadContent(state.items)
-                }
-                is PokemonOverviewViewState.ErrorState -> {
-                    showErrorMessage(state.errorMessage)
-                }
-                is PokemonOverviewViewState.LoadingFinishedState -> {
-                    showContent()
-                }
-            }
+    private fun provideViewModel() {
+        viewModel.apply {
+            navigateToPokemonDetailFragment().observe(viewLifecycleOwner, ::showPokemonDetails)
+            getState().observe(viewLifecycleOwner, ::showState)
         }
-        provideRecyclerView(getSpanCount())
+    }
+
+    private fun showPokemonDetails(pokemonName: String?) {
+        pokemonName?.let {
+            findNavController().navigate(
+                PokemonOverviewFragmentDirections
+                    .actionPokemonOverviewFragmentToPokemonDetailFragment(pokemonName)
+            )
+            viewModel.onPokemonDetailFragmentNavigated()
+        }
+    }
+
+    private fun showState(state: PokemonOverviewViewState) = when (state) {
+        is PokemonOverviewViewState.LoadingState -> {
+            showLoadingAnimation()
+        }
+        is PokemonOverviewViewState.ResultState -> {
+            loadContent(state.items)
+        }
+        is PokemonOverviewViewState.ErrorState -> {
+            showErrorMessage(state.errorMessage)
+        }
+        is PokemonOverviewViewState.LoadingFinishedState -> {
+            showContent()
+        }
     }
 
     private fun provideRecyclerView(spanCount: Int) {
+        itemAdapter = provideItemAdapter()
         binding.pokemonList.apply {
             layoutManager = provideGridLayoutManager(spanCount)
             adapter = itemAdapter
-            addOnScrollListener(object : RecyclerView.OnScrollListener() {
-                override fun onScrollStateChanged(recyclerView: RecyclerView, newState: Int) {
-                    super.onScrollStateChanged(recyclerView, newState)
-                    if (newState == SCROLL_STATE_IDLE) {
-                        val itemCount = getItemCount(recyclerView)
-                        val currentItemNumber = getCurrentItemNumber(recyclerView)
-                        Timber.d("$itemCount, $currentItemNumber")
-                        if (itemCount == currentItemNumber) {
-                            viewModel.loadNextPokemons()
-                        }
-                    }
-                }
-
-                private fun getItemCount(recyclerView: RecyclerView) =
-                    recyclerView.adapter?.itemCount
-
-                private fun getCurrentItemNumber(recyclerView: RecyclerView): Int {
-                    val layoutManager = recyclerView.layoutManager as GridLayoutManager
-                    return layoutManager.findLastCompletelyVisibleItemPosition() + 1
-                }
-            })
+            provideScrollListener()
         }
     }
+
+    private fun RecyclerView.provideScrollListener() {
+        addOnScrollListener(object : RecyclerView.OnScrollListener() {
+            override fun onScrollStateChanged(recyclerView: RecyclerView, newState: Int) {
+                super.onScrollStateChanged(recyclerView, newState)
+                if (newState == SCROLL_STATE_IDLE) {
+                    val itemCount = getItemCount(recyclerView)
+                    val currentItemNumber = getCurrentItemNumber(recyclerView)
+                    Timber.d("$itemCount, $currentItemNumber")
+                    if (itemCount == currentItemNumber) {
+                        viewModel.loadNextPokemons(ITEMS_PER_PAGE)
+                    }
+                }
+            }
+
+            private fun getItemCount(recyclerView: RecyclerView) =
+                recyclerView.adapter?.itemCount
+
+            private fun getCurrentItemNumber(recyclerView: RecyclerView): Int {
+                val layoutManager = recyclerView.layoutManager as GridLayoutManager
+                return layoutManager.findLastCompletelyVisibleItemPosition() + 1
+            }
+        })
+    }
+
+    private fun provideItemAdapter() = ItemAdapter(
+        pokemonClickListener = { viewModel.onPokemonItemClicked(it) },
+        generationClickListener = {},
+    )
 
     private fun provideGridLayoutManager(spanCount: Int): GridLayoutManager {
         val manager = GridLayoutManager(activity, spanCount)
@@ -107,9 +119,9 @@ class PokemonOverviewFragment : Fragment() {
         return manager
     }
 
-    private fun getSpanCount() = when (resources.configuration.orientation) {
-        Configuration.ORIENTATION_PORTRAIT -> 3
-        else -> 6
+    private fun getSpanCountByOrientation(orientation: Int) = when (orientation) {
+        Configuration.ORIENTATION_PORTRAIT -> SPAN_COUNT_PORTRAIT
+        else -> SPAN_COUNT_LANDSCAPE
     }
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
@@ -155,8 +167,5 @@ class PokemonOverviewFragment : Fragment() {
         binding.loadingStateImage.visibility = View.GONE
         binding.errorMessage.visibility = View.GONE
     }
-
-    private fun provideGenerationDefaultItem() =
-        Item.GenerationItem(getString(R.string.all_generations))
 
 }

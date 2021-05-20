@@ -14,7 +14,6 @@ import timber.log.Timber
 import kotlin.random.Random
 
 class ItemAdapter(
-    private val defaultGenerationItem: Item.GenerationItem,
     pokemonClickListener: (String) -> Unit = {},
     generationClickListener: (Int) -> Unit = {},
 ) :
@@ -36,14 +35,11 @@ class ItemAdapter(
         ) {
             val generationAdapter = GenerationListAdapter(generationClickListener)
             bind {
-                generationAdapter.items = adaptGenerationList(item.generationList)
+                generationAdapter.items = item.generationList
                 binding.generationOverviewList.adapter = generationAdapter
                 Timber.d("GenerationList binded")
             }
         }
-
-    private fun adaptGenerationList(generationItemList: List<Item.GenerationItem>) =
-        listOf(defaultGenerationItem) + generationItemList
 
     private fun headerAdapterDelegate() =
         adapterDelegateViewBinding<Item.HeaderItem, Item, ItemHeaderOverviewBinding>(

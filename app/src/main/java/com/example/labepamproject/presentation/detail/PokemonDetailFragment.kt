@@ -1,33 +1,25 @@
 package com.example.labepamproject.presentation.detail
 
 import android.os.Bundle
-import android.view.LayoutInflater
 import android.view.View
-import android.view.ViewGroup
 import android.widget.ImageView
 import androidx.fragment.app.Fragment
+import androidx.navigation.fragment.navArgs
 import com.bumptech.glide.Glide
 import com.example.labepamproject.R
 import com.example.labepamproject.databinding.FragmentPokemonDetailBinding
 import com.example.labepamproject.domain.PokemonEntity
+import org.koin.androidx.viewmodel.ext.android.viewModel
+import org.koin.core.parameter.parametersOf
 
-class PokemonDetailFragment : Fragment() {
+class PokemonDetailFragment : Fragment(R.layout.fragment_pokemon_detail) {
 
     private lateinit var binding: FragmentPokemonDetailBinding
-    private lateinit var viewModel: PokemonDetailViewModel
-
-    override fun onCreateView(
-        inflater: LayoutInflater,
-        container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View? {
-        binding = FragmentPokemonDetailBinding.inflate(inflater, container, false)
-        return binding.root
-    }
+    private val navArgs by navArgs<PokemonDetailFragmentArgs>()
+    private val viewModel: PokemonDetailViewModel by viewModel { parametersOf(navArgs.pokemonName) }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        val pokemonName = PokemonDetailFragmentArgs.fromBundle(requireArguments()).pokemonName
-        viewModel = PokemonDetailViewModel(pokemonName)
+        binding = FragmentPokemonDetailBinding.bind(view)
         viewModel.getState().observe(viewLifecycleOwner) { state ->
             when (state) {
                 is PokemonDetailViewState.LoadingState -> {
@@ -41,6 +33,7 @@ class PokemonDetailFragment : Fragment() {
                 }
             }
         }
+        viewModel.fetch()
     }
 
     private fun showContent(pokemonEntity: PokemonEntity) {

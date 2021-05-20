@@ -4,8 +4,6 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.labepamproject.data.NetworkPokemonRepository
-import com.example.labepamproject.data.network.createPokedexApiService
 import com.example.labepamproject.domain.PokemonEntity
 import com.example.labepamproject.domain.PokemonRepository
 import com.example.labepamproject.domain.Result
@@ -14,18 +12,12 @@ import timber.log.Timber
 
 class PokemonDetailViewModel(
     private val pokemonName: String,
-    private val repository: PokemonRepository = NetworkPokemonRepository(
-        createPokedexApiService
-    )
+    private val repository: PokemonRepository
 ) : ViewModel() {
     private val _state = MutableLiveData<PokemonDetailViewState>()
     fun getState(): LiveData<PokemonDetailViewState> = _state
 
-    init {
-        loadDetailedData()
-    }
-
-    private fun loadDetailedData() {
+    fun fetch() {
         onLoadState()
         viewModelScope.launch {
             when (val result = repository.getPokemonByName(pokemonName)) {

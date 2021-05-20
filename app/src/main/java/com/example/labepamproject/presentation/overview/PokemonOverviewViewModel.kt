@@ -4,8 +4,6 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.labepamproject.data.NetworkPokemonRepository
-import com.example.labepamproject.data.network.createPokedexApiService
 import com.example.labepamproject.domain.PokemonRepository
 import com.example.labepamproject.domain.Result
 import com.example.labepamproject.presentation.overview.adapter.Item
@@ -16,15 +14,16 @@ import timber.log.Timber
 
 
 class PokemonOverviewViewModel(
-    private val repository: PokemonRepository = NetworkPokemonRepository(
-        createPokedexApiService
-    )
+    private val repository: PokemonRepository
 ) :
     ViewModel() {
     private var currentOffset: Int = 0
     private val data: MutableList<Item> = mutableListOf()
 
     fun loadData(list: List<Item>): List<Item> {
+        if (data.containsAll(list)) {
+            return data
+        }
         data.addAll(list)
         return data.toList()
     }
@@ -43,11 +42,7 @@ class PokemonOverviewViewModel(
         _navigateToPokemonDetailFragment.value = null
     }
 
-    init {
-        loadItems()
-    }
-
-    private fun loadItems() {
+    fun fetch() {
         onLoadState()
         viewModelScope.launch {
             loadGenerations()
@@ -56,7 +51,7 @@ class PokemonOverviewViewModel(
         }
     }
 
-    private suspend fun loadPokemons(limit: Int = 24, offset: Int = 0) {
+    private suspend fun loadPokemons(limit: Int = ITEMS_PER_PAGE, offset: Int = 0) {
         when (val result = repository.getPokemons(limit, offset)) {
             is Result.Success -> {
                 val pokemonItem = result.data.map { it.asItem() }
@@ -69,8 +64,8 @@ class PokemonOverviewViewModel(
         }
     }
 
-    fun loadNextPokemons() {
-        currentOffset += 24
+    fun loadNextPokemons(offset: Int) {
+        currentOffset += offset
         onLoadState()
         viewModelScope.launch {
             loadPokemons(offset = currentOffset)
@@ -81,8 +76,11 @@ class PokemonOverviewViewModel(
     private suspend fun loadGenerations() {
         when (val result = repository.getGenerations()) {
             is Result.Success -> {
-                val generationListItem = Item.GenerationListItem(result.data.map { it.asItem() })
-                onResultState(listOf(generationListItem).provideHeader("Head"))
+                val generationItems = result.data.map { it.asItem() }
+                    .provideGenerationDefaultItem("All Generations")
+                val itemList = listOf(Item.GenerationListItem(generationItems))
+                    .provideHeader("Header")
+                onResultState(itemList)
             }
             is Result.Error -> {
                 Timber.e(result.exception)
@@ -93,6 +91,9 @@ class PokemonOverviewViewModel(
 
     private fun List<Item>.provideHeader(text: String) =
         listOf(Item.HeaderItem(text)) + this
+
+    private fun List<Item.GenerationItem>.provideGenerationDefaultItem(text: String) =
+        listOf(Item.GenerationItem(text)) + this
 
     private fun onResultState(items: List<Item>) {
         _state.value = (PokemonOverviewViewState.ResultState(items))
