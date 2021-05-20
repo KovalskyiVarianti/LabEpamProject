@@ -11,7 +11,6 @@ import com.example.labepamproject.domain.Result
 import com.example.labepamproject.presentation.overview.adapter.Item
 import com.example.labepamproject.presentation.overview.adapter.Item.GenerationItem.Companion.asItem
 import com.example.labepamproject.presentation.overview.adapter.Item.PokemonItem.Companion.asItem
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import timber.log.Timber
 
@@ -80,7 +79,6 @@ class PokemonOverviewViewModel(
     }
 
     private suspend fun loadGenerations() {
-        delay(2000)
         when (val result = repository.getGenerations()) {
             is Result.Success -> {
                 val generationListItem = Item.GenerationListItem(result.data.map { it.asItem() })
