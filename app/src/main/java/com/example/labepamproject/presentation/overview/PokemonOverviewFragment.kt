@@ -6,6 +6,7 @@ import android.view.Menu
 import android.view.MenuInflater
 import android.view.MenuItem
 import android.view.View
+import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.GridLayoutManager
@@ -35,6 +36,11 @@ class PokemonOverviewFragment : Fragment(R.layout.fragment_pokemon_overview) {
         provideViewModel()
         provideRecyclerView(getSpanCountByOrientation(resources.configuration.orientation))
         viewModel.fetch()
+        setAppName()
+    }
+
+    private fun setAppName() {
+        (activity as AppCompatActivity).supportActionBar?.title = getString(R.string.app_name)
     }
 
     private fun provideViewModel() {

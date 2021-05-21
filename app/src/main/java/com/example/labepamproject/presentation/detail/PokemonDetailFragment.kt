@@ -6,6 +6,7 @@ import android.view.View
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.annotation.RequiresApi
+import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.navArgs
 import com.bumptech.glide.Glide
@@ -15,6 +16,7 @@ import com.example.labepamproject.domain.PokemonEntity
 import com.skydoves.progressview.ProgressView
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import org.koin.core.parameter.parametersOf
+import java.util.*
 
 class PokemonDetailFragment : Fragment(R.layout.fragment_pokemon_detail) {
 
@@ -22,6 +24,7 @@ class PokemonDetailFragment : Fragment(R.layout.fragment_pokemon_detail) {
     private val navArgs by navArgs<PokemonDetailFragmentArgs>()
     private val viewModel: PokemonDetailViewModel by viewModel { parametersOf(navArgs.pokemonName) }
 
+    @RequiresApi(Build.VERSION_CODES.M)
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         binding = FragmentPokemonDetailBinding.bind(view)
         viewModel.getState().observe(viewLifecycleOwner) { state ->
@@ -37,7 +40,15 @@ class PokemonDetailFragment : Fragment(R.layout.fragment_pokemon_detail) {
                 }
             }
         }
+        (activity as AppCompatActivity).supportActionBar?.title = navArgs.pokemonName
         viewModel.fetch()
+        setPokemonName()
+    }
+
+    @RequiresApi(Build.VERSION_CODES.M)
+    private fun setPokemonName() {
+        val actionBar = (activity as AppCompatActivity).supportActionBar
+        actionBar?.title = navArgs.pokemonName.toUpperCase(Locale.ROOT)
     }
 
     private fun showContent(pokemonEntity: PokemonEntity) {

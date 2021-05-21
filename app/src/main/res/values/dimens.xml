@@ -9,4 +9,5 @@
     <dimen name="pokemon_item_margin">5dp</dimen>
     <dimen name="image_cardview_margin">3dp</dimen>
     <dimen name="image_text_bottom_margin">3dp</dimen>
+    <dimen name="progress_landscape_width">400dp</dimen>
 </resources>
