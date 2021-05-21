@@ -25,5 +25,8 @@
         <argument
             android:name="pokemonName"
             app:argType="string" />
+        <argument
+            android:name="itemColor"
+            app:argType="integer" />
     </fragment>
 </navigation>

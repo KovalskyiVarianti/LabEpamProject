@@ -44,11 +44,14 @@ class PokemonOverviewFragment : Fragment(R.layout.fragment_pokemon_overview) {
         }
     }
 
-    private fun showPokemonDetails(pokemonName: String?) {
-        pokemonName?.let {
+    private fun showPokemonDetails(pokemonItemParams: Pair<String, Int>?) {
+        pokemonItemParams?.let {
             findNavController().navigate(
                 PokemonOverviewFragmentDirections
-                    .actionPokemonOverviewFragmentToPokemonDetailFragment(pokemonName)
+                    .actionPokemonOverviewFragmentToPokemonDetailFragment(
+                        pokemonItemParams.first,
+                        pokemonItemParams.second
+                    )
             )
             viewModel.onPokemonDetailFragmentNavigated()
         }
@@ -103,7 +106,7 @@ class PokemonOverviewFragment : Fragment(R.layout.fragment_pokemon_overview) {
     }
 
     private fun provideItemAdapter() = ItemAdapter(
-        pokemonClickListener = { viewModel.onPokemonItemClicked(it) },
+        viewModel::onPokemonItemClicked,
         generationClickListener = {},
     )
 

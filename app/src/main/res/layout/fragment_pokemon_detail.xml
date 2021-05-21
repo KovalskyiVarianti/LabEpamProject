@@ -27,14 +27,130 @@
         app:layout_constraintTop_toBottomOf="@+id/pokemon_detail_image"
         tools:text="SOME NAME" />
 
-    <com.skydoves.progressview.ProgressView
-        android:layout_width="match_parent"
-        android:layout_height="20dp"
-        app:layout_constraintBottom_toBottomOf="parent"
+    <ImageView
+        android:id="@+id/hp_stat_image"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_margin="5dp"
+        android:src="@drawable/heart"
+        app:layout_constraintBottom_toTopOf="@id/attack_stat_image"
+        app:layout_constraintEnd_toStartOf="@id/hp_stat_bar"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/pokemon_detail_name"
-        app:progressView_progress="40" />
+        app:layout_constraintTop_toTopOf="@+id/hp_stat_bar" />
 
+    <com.skydoves.progressview.ProgressView
+        android:id="@+id/hp_stat_bar"
+        android:layout_width="300dp"
+        android:layout_height="20dp"
+        android:layout_margin="5dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@id/hp_stat_image"
+        app:layout_constraintTop_toBottomOf="@id/pokemon_detail_name"
+        app:progressView_labelSize="15sp" />
+
+    <ImageView
+        android:id="@+id/attack_stat_image"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_margin="5dp"
+        android:src="@drawable/sword"
+        app:layout_constraintBottom_toTopOf="@id/defense_stat_image"
+        app:layout_constraintEnd_toStartOf="@id/attack_stat_bar"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/hp_stat_image" />
+
+    <com.skydoves.progressview.ProgressView
+        android:id="@+id/attack_stat_bar"
+        android:layout_width="300dp"
+        android:layout_height="20dp"
+        android:layout_margin="5dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@id/attack_stat_image"
+        app:layout_constraintTop_toBottomOf="@id/hp_stat_bar"
+        app:progressView_labelSize="15sp" />
+
+    <ImageView
+        android:id="@+id/defense_stat_image"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_margin="5dp"
+        android:src="@drawable/shield"
+        app:layout_constraintBottom_toTopOf="@id/special_attack_stat_image"
+        app:layout_constraintEnd_toStartOf="@id/defense_stat_bar"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/attack_stat_image" />
+
+    <com.skydoves.progressview.ProgressView
+        android:id="@+id/defense_stat_bar"
+        android:layout_width="300dp"
+        android:layout_height="20dp"
+        android:layout_margin="5dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@id/defense_stat_image"
+        app:layout_constraintTop_toBottomOf="@id/attack_stat_bar"
+        app:progressView_labelSize="15sp" />
+
+    <ImageView
+        android:id="@+id/special_attack_stat_image"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_margin="5dp"
+        android:src="@drawable/slash"
+        app:layout_constraintBottom_toTopOf="@id/special_defense_stat_image"
+        app:layout_constraintEnd_toStartOf="@id/special_attack_stat_bar"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/defense_stat_image" />
+
+    <com.skydoves.progressview.ProgressView
+        android:id="@+id/special_attack_stat_bar"
+        android:layout_width="300dp"
+        android:layout_height="20dp"
+        android:layout_margin="5dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@id/special_attack_stat_image"
+        app:layout_constraintTop_toBottomOf="@id/defense_stat_bar"
+        app:progressView_labelSize="15sp" />
+
+    <ImageView
+        android:id="@+id/special_defense_stat_image"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_margin="5dp"
+        android:src="@drawable/shield"
+        app:layout_constraintEnd_toStartOf="@id/special_defense_stat_bar"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/special_attack_stat_image"
+        app:layout_constraintBottom_toTopOf="@id/speed_stat_image" />
+
+    <com.skydoves.progressview.ProgressView
+        android:id="@+id/special_defense_stat_bar"
+        android:layout_width="300dp"
+        android:layout_height="20dp"
+        android:layout_margin="5dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@id/special_defense_stat_image"
+        app:layout_constraintTop_toBottomOf="@id/special_attack_stat_bar"
+        app:progressView_labelSize="15sp" />
+
+    <ImageView
+        android:id="@+id/speed_stat_image"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_margin="5dp"
+        android:src="@drawable/lighting"
+        app:layout_constraintEnd_toStartOf="@id/speed_stat_bar"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/special_defense_stat_image"
+        app:layout_constraintBottom_toBottomOf="@id/speed_stat_bar" />
+
+    <com.skydoves.progressview.ProgressView
+        android:id="@+id/speed_stat_bar"
+        android:layout_width="300dp"
+        android:layout_height="20dp"
+        android:layout_margin="5dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@id/speed_stat_image"
+        app:layout_constraintTop_toBottomOf="@id/special_defense_stat_bar"
+        app:progressView_labelSize="15sp" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

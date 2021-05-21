@@ -14,7 +14,7 @@ import timber.log.Timber
 import kotlin.random.Random
 
 class ItemAdapter(
-    pokemonClickListener: (String) -> Unit = {},
+    pokemonClickListener: (String, Int) -> Unit,
     generationClickListener: (Int) -> Unit = {},
 ) :
     AsyncListDifferDelegationAdapter<Item>(DiffCallback) {
@@ -58,7 +58,7 @@ class ItemAdapter(
 
         }
 
-    private fun pokemonAdapterDelegate(pokemonClickListener: (String) -> Unit) =
+    private fun pokemonAdapterDelegate(pokemonClickListener: (String, Int) -> Unit) =
         adapterDelegateViewBinding<Item.PokemonItem, Item, ItemPokemonOverviewBinding>(
             { layoutInflater, parent ->
                 ItemPokemonOverviewBinding.inflate(
@@ -68,23 +68,24 @@ class ItemAdapter(
                 )
             }
         ) {
+            val color = Random.getRandomColor()
             binding.root.setOnClickListener {
-                pokemonClickListener(item.name)
+                pokemonClickListener(item.name, color)
             }
             bind {
-                val rnd = Random
-                binding.pokemonOverviewImage.setBackgroundColor(
-                    Color.rgb(
-                        rnd.nextInt(256),
-                        rnd.nextInt(256),
-                        rnd.nextInt(256)
-                    )
-                )
+
+                binding.pokemonOverviewImage.setBackgroundColor(color)
                 binding.pokemonOverviewName.text = adaptPokemonName(item.name)
                 binding.pokemonOverviewImage.loadImage(item.imgSrc)
                 Timber.d("Pokemon ${item.name} binded")
             }
         }
+
+    private fun Random.getRandomColor() = Color.rgb(
+        nextInt(256),
+        nextInt(256),
+        nextInt(256)
+    )
 
     private fun ImageView.loadImage(url: String) {
         Glide.with(context)
