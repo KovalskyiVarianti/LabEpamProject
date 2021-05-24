@@ -3,31 +3,21 @@ package com.example.labepamproject.data
 import com.example.labepamproject.data.network.GenerationPartialResponse
 import com.example.labepamproject.data.network.PokedexApiService
 import com.example.labepamproject.data.network.PokemonDetailedResponse
+import com.example.labepamproject.data.network.PokemonPartialResponse
 import com.example.labepamproject.domain.GenerationEntity
 import com.example.labepamproject.domain.PokemonEntity
 import com.example.labepamproject.domain.PokemonRepository
 import com.example.labepamproject.domain.Result
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
+import java.util.*
 
 class NetworkPokemonRepository(val api: PokedexApiService) : PokemonRepository {
-    override suspend fun getPokemons(limit: Int, offset: Int): Result<List<PokemonEntity>> =
-        withContext(Dispatchers.IO) {
-            try {
-                val pokemonNameList = api.fetchPokemonList(limit, offset).results.map { it.name }
-                val pokemonDetailList = pokemonNameList.map { name ->
-                    api.fetchPokemonInfo(name).toEntity()
-                }
-                Result.Success(pokemonDetailList)
-            } catch (e: Exception) {
-                Result.Error(e)
-            }
-        }
 
     override suspend fun getPokemonByName(name: String): Result<PokemonEntity> =
         withContext(Dispatchers.IO) {
             try {
-                val pokemon = api.fetchPokemonInfo(name).toEntity()
+                val pokemon = api.fetchPokemonInfo(name.toLowerCase()).toEntity()
                 Result.Success(pokemon)
             } catch (e: Exception) {
                 Result.Error(e)
@@ -44,10 +34,41 @@ class NetworkPokemonRepository(val api: PokedexApiService) : PokemonRepository {
             }
         }
 
+    override suspend fun getPokemons(
+        generationId: Int,
+        limit: Int,
+        offset: Int
+    ): Result<List<PokemonEntity>> =
+        withContext(Dispatchers.IO) {
+            try {
+                val pokemonNameList = fetchPokemonList(generationId, limit, offset)
+                val pokemonDetailList = pokemonNameList.map { name ->
+                    api.fetchPokemonInfo(name).toEntity()
+                }
+                Result.Success(pokemonDetailList)
+            } catch (e: Exception) {
+                Result.Error(e)
+            }
+        }
+
+    private suspend fun fetchPokemonList(id: Int, limit: Int, offset: Int) =
+        if (isValidGenerationId(id)) {
+            api.fetchGenerationInfo(id).pokemons.getForPage(offset, offset + limit)
+        } else api.fetchPokemonList(limit, offset).results.map { it.name }
+
+    private fun List<PokemonPartialResponse>.getForPage(fromIndex: Int, toIndex: Int) =
+        when {
+            fromIndex > size -> emptyList()
+            toIndex > size -> subList(fromIndex, size - 1).map { it.name }
+            else -> subList(fromIndex, toIndex).map { it.name }
+        }
+
+    private fun isValidGenerationId(id: Int) = id in 1..8
+
     private fun PokemonDetailedResponse.toEntity() =
         PokemonEntity(
             id = id,
-            name = name,
+            name = name.replaceFirst(name[0], name[0].toUpperCase()),
             prevImgUrl = generateUrlFromId(id),
             experience = experience,
             height = height,
@@ -58,7 +79,19 @@ class NetworkPokemonRepository(val api: PokedexApiService) : PokemonRepository {
         )
 
     private fun GenerationPartialResponse.toEntity() =
-        GenerationEntity(name)
+        GenerationEntity(getGenerationId(name), name.toUpperCase(Locale.ROOT))
+
+    private fun getGenerationId(text: String) = when (text) {
+        "generation-i" -> 1
+        "generation-ii" -> 2
+        "generation-iii" -> 3
+        "generation-iv" -> 4
+        "generation-v" -> 5
+        "generation-vi" -> 6
+        "generation-vii" -> 7
+        "generation-viii" -> 8
+        else -> 0
+    }
 
     private fun generateUrlFromId(id: Int): String =
         "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/$id.png"

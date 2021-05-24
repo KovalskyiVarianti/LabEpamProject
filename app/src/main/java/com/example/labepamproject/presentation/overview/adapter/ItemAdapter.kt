@@ -15,7 +15,7 @@ import kotlin.random.Random
 
 class ItemAdapter(
     pokemonClickListener: (String, Int) -> Unit,
-    generationClickListener: (Int) -> Unit = {},
+    generationClickListener: (Int, String) -> Unit,
 ) :
     AsyncListDifferDelegationAdapter<Item>(DiffCallback) {
 
@@ -25,7 +25,7 @@ class ItemAdapter(
         delegatesManager.addDelegate(generationListAdapterDelegate(generationClickListener))
     }
 
-    private fun generationListAdapterDelegate(generationClickListener: (Int) -> Unit) =
+    private fun generationListAdapterDelegate(generationClickListener: (Int, String) -> Unit) =
         adapterDelegateViewBinding<Item.GenerationListItem, Item, ItemGenerationListOverviewBinding>(
             { layoutInflater, parent ->
                 ItemGenerationListOverviewBinding.inflate(
@@ -73,9 +73,8 @@ class ItemAdapter(
                 pokemonClickListener(item.name, color)
             }
             bind {
-
                 binding.pokemonOverviewImage.setBackgroundColor(color)
-                binding.pokemonOverviewName.text = adaptPokemonName(item.name)
+                binding.pokemonOverviewName.text = item.name
                 binding.pokemonOverviewImage.loadImage(item.imgSrc)
                 Timber.d("Pokemon ${item.name} binded")
             }
@@ -93,8 +92,6 @@ class ItemAdapter(
             .placeholder(R.drawable.loading_image_placeholder)
             .into(this)
     }
-
-    private fun adaptPokemonName(name: String) = name.replaceFirst(name[0], name[0].toUpperCase())
 
     companion object DiffCallback : DiffUtil.ItemCallback<Item>() {
         override fun areItemsTheSame(oldItem: Item, newItem: Item): Boolean {

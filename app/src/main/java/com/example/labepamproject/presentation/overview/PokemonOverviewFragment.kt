@@ -20,10 +20,6 @@ import com.example.labepamproject.presentation.overview.adapter.ItemAdapter
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import timber.log.Timber
 
-const val ITEMS_PER_PAGE: Int = 24
-const val SPAN_COUNT_PORTRAIT: Int = 3
-const val SPAN_COUNT_LANDSCAPE: Int = 6
-
 class PokemonOverviewFragment : Fragment(R.layout.fragment_pokemon_overview) {
 
     private lateinit var binding: FragmentPokemonOverviewBinding
@@ -113,7 +109,7 @@ class PokemonOverviewFragment : Fragment(R.layout.fragment_pokemon_overview) {
 
     private fun provideItemAdapter() = ItemAdapter(
         viewModel::onPokemonItemClicked,
-        generationClickListener = {},
+        viewModel::onGenerationItemClicked,
     )
 
     private fun provideGridLayoutManager(spanCount: Int): GridLayoutManager {
@@ -153,7 +149,7 @@ class PokemonOverviewFragment : Fragment(R.layout.fragment_pokemon_overview) {
     }
 
     private fun loadContent(contentList: List<Item>) {
-        itemAdapter.items = viewModel.loadData(contentList)
+        itemAdapter.items = contentList
         Timber.d("Data loaded into adapter")
     }
 

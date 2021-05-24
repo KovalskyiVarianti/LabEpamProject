@@ -10,11 +10,12 @@ sealed class Item {
         }
     }
 
-    data class HeaderItem(val text: String) : Item()
+    data class HeaderItem(var text: String) : Item()
 
-    data class GenerationItem(val text: String) : Item() {
+    data class GenerationItem(val id: Int, val text: String, var isPressed: Boolean = false) :
+        Item() {
         companion object {
-            fun GenerationEntity.asItem(): GenerationItem = GenerationItem(name)
+            fun GenerationEntity.asItem(): GenerationItem = GenerationItem(id, name)
         }
     }
 

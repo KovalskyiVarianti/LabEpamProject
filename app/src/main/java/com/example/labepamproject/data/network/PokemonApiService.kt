@@ -19,4 +19,7 @@ interface PokedexApiService {
 
     @GET("generation")
     suspend fun fetchGenerationList(): GenerationListResponse
+
+    @GET("generation/{id}")
+    suspend fun fetchGenerationInfo(@Path("id") id: Int): GenerationDetailedResponse
 }

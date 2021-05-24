@@ -4,7 +4,6 @@ import android.os.Build
 import android.os.Bundle
 import android.view.View
 import android.widget.ImageView
-import android.widget.TextView
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
@@ -16,7 +15,6 @@ import com.example.labepamproject.domain.PokemonEntity
 import com.skydoves.progressview.ProgressView
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import org.koin.core.parameter.parametersOf
-import java.util.*
 
 class PokemonDetailFragment : Fragment(R.layout.fragment_pokemon_detail) {
 
@@ -40,7 +38,6 @@ class PokemonDetailFragment : Fragment(R.layout.fragment_pokemon_detail) {
                 }
             }
         }
-        (activity as AppCompatActivity).supportActionBar?.title = navArgs.pokemonName
         viewModel.fetch()
         setPokemonName()
     }
@@ -48,7 +45,7 @@ class PokemonDetailFragment : Fragment(R.layout.fragment_pokemon_detail) {
     @RequiresApi(Build.VERSION_CODES.M)
     private fun setPokemonName() {
         val actionBar = (activity as AppCompatActivity).supportActionBar
-        actionBar?.title = navArgs.pokemonName.toUpperCase(Locale.ROOT)
+        actionBar?.title = navArgs.pokemonName
     }
 
     private fun showContent(pokemonEntity: PokemonEntity) {
@@ -66,19 +63,15 @@ class PokemonDetailFragment : Fragment(R.layout.fragment_pokemon_detail) {
     @RequiresApi(Build.VERSION_CODES.O)
     private fun setValues(stats: Pair<String, Float>) = when (stats.first) {
         "hp" -> {
-            //binding.hpStatText.setTextStatName(stats.first)
             binding.hpStatBar.setBarStatValue(stats.second)
         }
         "attack" -> {
-            //binding.attackStatText.setTextStatName(stats.first)
             binding.attackStatBar.setBarStatValue(stats.second)
         }
         "defense" -> {
-            //binding.defenseStatText.setTextStatName(stats.first)
             binding.defenseStatBar.setBarStatValue(stats.second)
         }
         "special-attack" -> {
-            //binding.specialAttackStatText.setTextStatName(stats.first)
             binding.specialAttackStatBar.setBarStatValue(stats.second)
         }
         "special-defense" -> {
@@ -88,10 +81,6 @@ class PokemonDetailFragment : Fragment(R.layout.fragment_pokemon_detail) {
             binding.speedStatBar.setBarStatValue(stats.second)
         }
         else -> throw IllegalArgumentException()
-    }
-
-    private fun TextView.setTextStatName(name: String) {
-        text = name
     }
 
     private fun ProgressView.setBarStatValue(value: Float) {
