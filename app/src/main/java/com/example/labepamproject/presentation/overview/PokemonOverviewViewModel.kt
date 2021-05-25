@@ -4,16 +4,16 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.labepamproject.domain.PokemonEntity
 import com.example.labepamproject.domain.PokemonRepository
 import com.example.labepamproject.domain.Result
 import com.example.labepamproject.presentation.overview.adapter.Item
 import com.example.labepamproject.presentation.overview.adapter.Item.GenerationItem.Companion.asItem
 import com.example.labepamproject.presentation.overview.adapter.Item.PokemonItem.Companion.asItem
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import timber.log.Timber
 
-const val DEFAULT_GENERATION_ITEM_TEXT = "All generations"
+const val DEFAULT_HEADER_TEXT = "ALL"
 const val ITEMS_PER_PAGE: Int = 24
 const val SPAN_COUNT_PORTRAIT: Int = 3
 const val SPAN_COUNT_LANDSCAPE: Int = 6
@@ -23,10 +23,12 @@ class PokemonOverviewViewModel(
 ) :
     ViewModel() {
     private var currentOffset: Int = 0
-    private var headerItem: Item.HeaderItem = Item.HeaderItem(DEFAULT_GENERATION_ITEM_TEXT)
-    private val generationData: MutableList<Item> = mutableListOf()
-    private val pokemonData: MutableList<Item> = mutableListOf()
+    private var generationData: List<Item.GenerationItem> = listOf()
+    private var pokemonData: List<Item.PokemonItem> = listOf()
     private var currentGenerationId: Int = 0
+
+    private val _headerText = MutableLiveData(DEFAULT_HEADER_TEXT)
+    fun getHeaderText(): LiveData<String> = _headerText
 
     private val _state = MutableLiveData<PokemonOverviewViewState>()
     fun getState(): LiveData<PokemonOverviewViewState> = _state
@@ -44,12 +46,21 @@ class PokemonOverviewViewModel(
     }
 
     fun fetch() {
-        onLoadState()
-        viewModelScope.launch {
-            loadGenerations()
-            loadPokemons()
-            onLoadingFinishedState()
+        if (pokemonData.isNotEmpty() && generationData.isNotEmpty()) {
+            viewModelScope.launch {
+                onGenerationResultState(generationData)
+                delay(1)
+                onPokemonResultState(pokemonData)
+            }
+        } else {
+            onLoadState()
+            viewModelScope.launch {
+                loadGenerations()
+                loadPokemons()
+                onLoadingFinishedState()
+            }
         }
+
     }
 
     fun loadNextPokemons(offset: Int) {
@@ -61,26 +72,38 @@ class PokemonOverviewViewModel(
         }
     }
 
-    fun onGenerationItemClicked(id: Int, name: String) {
-        currentGenerationId = id
-        currentOffset = 0
-        headerItem = Item.HeaderItem(name)
-        updateData()
+    fun onGenerationItemClicked(id: Int, generationName: String) {
+        updateData(id, generationName)
     }
 
-    private fun updateData() {
+    private fun updateData(id: Int, generationName: String) {
         onLoadState()
         viewModelScope.launch {
-            pokemonData.clear()
+            currentGenerationId = id
+            currentOffset = 0
+            pokemonData = emptyList()
             loadPokemons()
+            _headerText.value = generationName
             onLoadingFinishedState()
         }
     }
 
+    private suspend fun loadGenerations() {
+        when (val result = repository.getGenerations()) {
+            is Result.Success -> {
+                val generationItems = result.data.map { it.asItem() }
+                    .provideGenerationDefaultItem(DEFAULT_HEADER_TEXT)
+                onGenerationResultState(generationItems)
+            }
+            is Result.Error -> {
+                Timber.e(result.exception)
+                onErrorState(result.exception)
+            }
+        }
+    }
+
     private suspend fun loadPokemons(limit: Int = ITEMS_PER_PAGE, offset: Int = 0) {
-        val result: Result<List<PokemonEntity>> =
-            repository.getPokemons(currentGenerationId, limit, offset)
-        when (result) {
+        when (val result = repository.getPokemons(currentGenerationId, limit, offset)) {
             is Result.Success -> {
                 val pokemonItem = result.data.map { it.asItem() }
                 onPokemonResultState(pokemonItem)
@@ -92,40 +115,23 @@ class PokemonOverviewViewModel(
         }
     }
 
-    private suspend fun loadGenerations() {
-        when (val result = repository.getGenerations()) {
-            is Result.Success -> {
-                val generationItems = result.data.map { it.asItem() }
-                    .provideGenerationDefaultItem(DEFAULT_GENERATION_ITEM_TEXT)
-                val generationList = listOf(Item.GenerationListItem(generationItems))
-                onGenerationResultState(generationList)
-            }
-            is Result.Error -> {
-                Timber.e(result.exception)
-                onErrorState(result.exception)
-            }
-        }
-    }
-
     private fun List<Item.GenerationItem>.provideGenerationDefaultItem(text: String) =
-        listOf(Item.GenerationItem(0, text)) + this
+        listOf(Item.GenerationItem(0, text, true)) + this
 
-    private fun onGenerationResultState(itemList: List<Item>) {
+    private fun onGenerationResultState(itemList: List<Item.GenerationItem>) {
         if (generationData.isEmpty()) {
-            generationData.addAll(itemList)
+            generationData = itemList
         }
-        val data = listOf(headerItem) + generationData + pokemonData
-        _state.value = PokemonOverviewViewState.ResultState(data)
-        Timber.d("Pokemon loading is successful")
+        _state.value = PokemonOverviewViewState.GenerationResultState(generationData)
+        Timber.d("Generation loading is successful")
         Timber.d("Current state: ${_state.value}")
     }
 
-    private fun onPokemonResultState(itemList: List<Item>) {
+    private fun onPokemonResultState(itemList: List<Item.PokemonItem>) {
         if (!pokemonData.containsAll(itemList)) {
-            pokemonData.addAll(itemList)
+            pokemonData += itemList
         }
-        val data = listOf(headerItem) + generationData + pokemonData
-        _state.value = PokemonOverviewViewState.ResultState(data)
+        _state.value = PokemonOverviewViewState.PokemonResultState(pokemonData)
         Timber.d("Pokemon loading is successful")
         Timber.d("Current state: ${_state.value}")
     }

@@ -15,22 +15,30 @@ import androidx.recyclerview.widget.RecyclerView.SCROLL_STATE_IDLE
 import com.bumptech.glide.Glide
 import com.example.labepamproject.R
 import com.example.labepamproject.databinding.FragmentPokemonOverviewBinding
+import com.example.labepamproject.presentation.overview.adapter.GenerationAdapter
 import com.example.labepamproject.presentation.overview.adapter.Item
-import com.example.labepamproject.presentation.overview.adapter.ItemAdapter
+import com.example.labepamproject.presentation.overview.adapter.PokemonAdapter
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import timber.log.Timber
 
 class PokemonOverviewFragment : Fragment(R.layout.fragment_pokemon_overview) {
 
     private lateinit var binding: FragmentPokemonOverviewBinding
-    private lateinit var itemAdapter: ItemAdapter
+    private var pokemonAdapter: PokemonAdapter? = null
+    private var generationAdapter: GenerationAdapter? = null
     private val viewModel: PokemonOverviewViewModel by viewModel()
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         setHasOptionsMenu(true)
         binding = FragmentPokemonOverviewBinding.bind(view)
         provideViewModel()
-        provideRecyclerView(getSpanCountByOrientation(resources.configuration.orientation))
+        providePokemonRecyclerView(
+            getSpanCountByOrientation(resources.configuration.orientation),
+            providePokemonAdapter()
+        )
+        provideGenerationRecyclerView(
+            provideGenerationAdapter()
+        )
         viewModel.fetch()
         setAppName()
     }
@@ -43,7 +51,12 @@ class PokemonOverviewFragment : Fragment(R.layout.fragment_pokemon_overview) {
         viewModel.apply {
             navigateToPokemonDetailFragment().observe(viewLifecycleOwner, ::showPokemonDetails)
             getState().observe(viewLifecycleOwner, ::showState)
+            getHeaderText().observe(viewLifecycleOwner, ::showHeader)
         }
+    }
+
+    private fun showHeader(headerText: String) {
+        binding.headerOverviewText.text = headerText
     }
 
     private fun showPokemonDetails(pokemonItemParams: Pair<String, Int>?) {
@@ -63,8 +76,11 @@ class PokemonOverviewFragment : Fragment(R.layout.fragment_pokemon_overview) {
         is PokemonOverviewViewState.LoadingState -> {
             showLoadingAnimation()
         }
-        is PokemonOverviewViewState.ResultState -> {
-            loadContent(state.items)
+        is PokemonOverviewViewState.PokemonResultState -> {
+            loadPokemons(state.pokemonItems)
+        }
+        is PokemonOverviewViewState.GenerationResultState -> {
+            loadGenerations(state.generationItems)
         }
         is PokemonOverviewViewState.ErrorState -> {
             showErrorMessage(state.errorMessage)
@@ -74,13 +90,18 @@ class PokemonOverviewFragment : Fragment(R.layout.fragment_pokemon_overview) {
         }
     }
 
-    private fun provideRecyclerView(spanCount: Int) {
-        itemAdapter = provideItemAdapter()
+    private fun providePokemonRecyclerView(spanCount: Int, pokemonItemAdapter: PokemonAdapter) {
+        pokemonAdapter = pokemonItemAdapter
         binding.pokemonList.apply {
             layoutManager = provideGridLayoutManager(spanCount)
-            adapter = itemAdapter
+            adapter = pokemonAdapter
             provideScrollListener()
         }
+    }
+
+    private fun provideGenerationRecyclerView(generationItemAdapter: GenerationAdapter) {
+        generationAdapter = generationItemAdapter
+        binding.generationList.adapter = generationAdapter
     }
 
     private fun RecyclerView.provideScrollListener() {
@@ -107,22 +128,16 @@ class PokemonOverviewFragment : Fragment(R.layout.fragment_pokemon_overview) {
         })
     }
 
-    private fun provideItemAdapter() = ItemAdapter(
+    private fun providePokemonAdapter() = PokemonAdapter(
         viewModel::onPokemonItemClicked,
+    )
+
+    private fun provideGenerationAdapter() = GenerationAdapter(
         viewModel::onGenerationItemClicked,
     )
 
-    private fun provideGridLayoutManager(spanCount: Int): GridLayoutManager {
-        val manager = GridLayoutManager(activity, spanCount)
-        manager.spanSizeLookup = object : GridLayoutManager.SpanSizeLookup() {
-            override fun getSpanSize(position: Int) = when (position) {
-                0 -> spanCount
-                1 -> spanCount
-                else -> 1
-            }
-        }
-        return manager
-    }
+    private fun provideGridLayoutManager(spanCount: Int): GridLayoutManager =
+        GridLayoutManager(activity, spanCount)
 
     private fun getSpanCountByOrientation(orientation: Int) = when (orientation) {
         Configuration.ORIENTATION_PORTRAIT -> SPAN_COUNT_PORTRAIT
@@ -148,9 +163,12 @@ class PokemonOverviewFragment : Fragment(R.layout.fragment_pokemon_overview) {
         //binding = null
     }
 
-    private fun loadContent(contentList: List<Item>) {
-        itemAdapter.items = contentList
-        Timber.d("Data loaded into adapter")
+    private fun loadPokemons(contentList: List<Item.PokemonItem>) {
+        pokemonAdapter?.items = contentList
+    }
+
+    private fun loadGenerations(contentList: List<Item.GenerationItem>) {
+        generationAdapter?.items = contentList
     }
 
     private fun showErrorMessage(errorMessage: String) {

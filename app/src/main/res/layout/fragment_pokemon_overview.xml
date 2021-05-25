@@ -4,18 +4,47 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@color/items_background_color"
     tools:context=".presentation.overview.PokemonOverviewFragment">
 
+    <TextView
+        android:id="@+id/header_overview_text"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="5dp"
+        android:background="@color/background_color"
+        android:gravity="center_horizontal"
+        android:textAlignment="center"
+        android:textColor="@color/black"
+        android:textSize="@dimen/header_text_size"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toTopOf="@id/generation_list"
+        tools:text="Pokemons" />
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/generation_list"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginVertical="@dimen/generation_list_vertical_margin"
+        android:background="@color/background_color"
+        android:orientation="horizontal"
+        app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/header_overview_text"
+        app:layout_constraintBottom_toTopOf="@id/pokemon_list" />
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/pokemon_list"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
         android:background="#79DAF8"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/generation_list"
         tools:listitem="@layout/item_pokemon_overview" />
 
     <ImageView
