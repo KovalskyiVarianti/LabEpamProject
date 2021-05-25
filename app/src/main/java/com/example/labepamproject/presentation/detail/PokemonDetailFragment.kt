@@ -51,12 +51,12 @@ class PokemonDetailFragment : Fragment(R.layout.fragment_pokemon_detail) {
     private fun showContent(pokemonEntity: PokemonEntity) {
         binding.pokemonDetailImage.setBackgroundColor(navArgs.itemColor)
         binding.pokemonDetailImage.loadImage(pokemonEntity.prevImgUrl)
-        binding.pokemonDetailName.text = "name: ${pokemonEntity.name}\n" +
-                "height: ${pokemonEntity.height}\n" +
-                "weight: ${pokemonEntity.weight}\n" +
-                "experience: ${pokemonEntity.experience}\n" +
-                "abilities: ${pokemonEntity.abilities.joinToString { it }}\n" +
-                "types: ${pokemonEntity.types.joinToString { it }}\n"
+        binding.pokemonDetailName.text =
+            "height: ${pokemonEntity.height}\t" +
+                    "weight: ${pokemonEntity.weight}\t" +
+                    "experience: ${pokemonEntity.experience}\n" +
+                    "abilities: ${pokemonEntity.abilities.joinToString { it }}\n" +
+                    "types: ${pokemonEntity.types.joinToString { it }}\n"
         pokemonEntity.stats.forEach(::setValues)
     }
 

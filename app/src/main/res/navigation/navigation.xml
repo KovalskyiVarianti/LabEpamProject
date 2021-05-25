@@ -9,10 +9,13 @@
         android:id="@+id/pokemon_overview_fragment"
         android:name="com.example.labepamproject.presentation.overview.PokemonOverviewFragment"
         android:label="fragment_pokemon_overview"
-        tools:layout="@layout/fragment_pokemon_overview" >
+        tools:layout="@layout/fragment_pokemon_overview">
         <action
             android:id="@+id/action_pokemonOverviewFragment_to_pokemonDetailFragment"
             app:destination="@id/pokemon_detail_fragment" />
+        <action
+            android:id="@+id/action_pokemon_overview_fragment_to_settings_fragment2"
+            app:destination="@id/settings_fragment" />
     </fragment>
     <fragment
         android:id="@+id/pokemon_detail_fragment"
@@ -29,4 +32,9 @@
             android:name="itemColor"
             app:argType="integer" />
     </fragment>
+    <fragment
+        android:id="@+id/settings_fragment"
+        android:name="com.example.labepamproject.presentation.settings.SettingsFragment"
+        android:label="fragment_settings"
+        tools:layout="@layout/fragment_settings" />
 </navigation>

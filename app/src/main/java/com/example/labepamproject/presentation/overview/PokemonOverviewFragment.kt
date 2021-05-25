@@ -1,5 +1,6 @@
 package com.example.labepamproject.presentation.overview
 
+import android.content.SharedPreferences
 import android.content.res.Configuration
 import android.os.Bundle
 import android.view.Menu
@@ -9,6 +10,7 @@ import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
+import androidx.preference.PreferenceManager
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.RecyclerView.SCROLL_STATE_IDLE
@@ -23,8 +25,7 @@ import timber.log.Timber
 
 const val DEFAULT_HEADER_TEXT = "ALL"
 const val ITEMS_PER_PAGE: Int = 24
-const val SPAN_COUNT_PORTRAIT: Int = 3
-const val SPAN_COUNT_LANDSCAPE: Int = 6
+const val SPAN_COUNT_DEFAULT_VALUE = 3
 
 class PokemonOverviewFragment : Fragment(R.layout.fragment_pokemon_overview) {
 
@@ -32,11 +33,15 @@ class PokemonOverviewFragment : Fragment(R.layout.fragment_pokemon_overview) {
     private var pokemonAdapter: PokemonAdapter? = null
     private var generationAdapter: GenerationAdapter? = null
     private val viewModel: PokemonOverviewViewModel by viewModel()
+    private var sharedPreferences: SharedPreferences? = null
+    private var spanCount: Int? = null
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         setHasOptionsMenu(true)
         binding = FragmentPokemonOverviewBinding.bind(view)
         provideViewModel()
+        sharedPreferences = provideSharedPreferences()
+        provideSpanCount()
         providePokemonRecyclerView(
             getSpanCountByOrientation(resources.configuration.orientation),
             providePokemonAdapter()
@@ -46,6 +51,12 @@ class PokemonOverviewFragment : Fragment(R.layout.fragment_pokemon_overview) {
         )
         viewModel.fetch()
         setAppName()
+    }
+
+    private fun provideSharedPreferences() = PreferenceManager.getDefaultSharedPreferences(activity)
+
+    private fun provideSpanCount() {
+        spanCount = sharedPreferences?.getString(getString(R.string.sp_key_item_size), "3")?.toInt()
     }
 
     private fun setAppName() {
@@ -76,6 +87,7 @@ class PokemonOverviewFragment : Fragment(R.layout.fragment_pokemon_overview) {
             viewModel.onPokemonDetailFragmentNavigated()
         }
     }
+
 
     private fun showState(state: PokemonOverviewViewState) = when (state) {
         is PokemonOverviewViewState.LoadingState -> {
@@ -145,8 +157,8 @@ class PokemonOverviewFragment : Fragment(R.layout.fragment_pokemon_overview) {
         GridLayoutManager(activity, spanCount)
 
     private fun getSpanCountByOrientation(orientation: Int) = when (orientation) {
-        Configuration.ORIENTATION_PORTRAIT -> SPAN_COUNT_PORTRAIT
-        else -> SPAN_COUNT_LANDSCAPE
+        Configuration.ORIENTATION_PORTRAIT -> spanCount ?: SPAN_COUNT_DEFAULT_VALUE
+        else -> spanCount?.times(2) ?: SPAN_COUNT_DEFAULT_VALUE * 2
     }
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
@@ -157,7 +169,7 @@ class PokemonOverviewFragment : Fragment(R.layout.fragment_pokemon_overview) {
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         when (item.itemId) {
             R.id.settings -> {
-
+                this?.let { findNavController().navigate(PokemonOverviewFragmentDirections.actionPokemonOverviewFragmentToSettingsFragment2()) }
             }
         }
         return true

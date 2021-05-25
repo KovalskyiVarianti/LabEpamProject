@@ -66,7 +66,9 @@ class PokemonOverviewViewModel(
     }
 
     fun onGenerationItemClicked(id: Int, generationName: String) {
-        currentFilter = PokemonFilter.GenerationPokemonFilter(id)
+        currentFilter = if (id in 1..8) {
+            PokemonFilter.GenerationPokemonFilter(id)
+        } else PokemonFilter.AllPokemonFilter
         currentOffset = 0
         pokemonData = emptyList()
         viewModelScope.launch { loadPokemons() }
