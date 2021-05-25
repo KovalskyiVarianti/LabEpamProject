@@ -25,20 +25,22 @@ class GenerationAdapter(generationClickListener: (Int, String) -> Unit) :
         ) {
             binding.root.setOnClickListener {
                 generationClickListener(item.id, item.text)
+                Timber.d("$item is clicked")
                 item.isPressed = true
-                notifyItemChanged(adapterPosition)
                 items.forEach {
                     if (it != item && it.isPressed) {
                         it.isPressed = false
                     }
-                    notifyDataSetChanged()
                 }
+                notifyDataSetChanged()
             }
             bind {
                 if (!item.isPressed) {
+                    binding.root.isClickable = true
                     binding.root.setCardBackgroundColor(Color.rgb(200, 253, 223))
                 } else {
                     binding.root.setCardBackgroundColor(Color.rgb(135, 220, 246))
+                    binding.root.isClickable = false
                 }
                 binding.generationOverviewName.text = item.text
                 Timber.d("Generation $item binded")

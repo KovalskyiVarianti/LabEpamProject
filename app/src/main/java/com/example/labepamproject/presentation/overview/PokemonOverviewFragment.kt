@@ -21,6 +21,11 @@ import com.example.labepamproject.presentation.overview.adapter.PokemonAdapter
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import timber.log.Timber
 
+const val DEFAULT_HEADER_TEXT = "ALL"
+const val ITEMS_PER_PAGE: Int = 24
+const val SPAN_COUNT_PORTRAIT: Int = 3
+const val SPAN_COUNT_LANDSCAPE: Int = 6
+
 class PokemonOverviewFragment : Fragment(R.layout.fragment_pokemon_overview) {
 
     private lateinit var binding: FragmentPokemonOverviewBinding

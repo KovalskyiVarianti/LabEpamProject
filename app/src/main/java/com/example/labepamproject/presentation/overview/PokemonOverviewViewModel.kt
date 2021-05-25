@@ -4,6 +4,7 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.labepamproject.domain.PokemonEntity
 import com.example.labepamproject.domain.PokemonRepository
 import com.example.labepamproject.domain.Result
 import com.example.labepamproject.presentation.overview.adapter.Item
@@ -13,19 +14,15 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import timber.log.Timber
 
-const val DEFAULT_HEADER_TEXT = "ALL"
-const val ITEMS_PER_PAGE: Int = 24
-const val SPAN_COUNT_PORTRAIT: Int = 3
-const val SPAN_COUNT_LANDSCAPE: Int = 6
-
 class PokemonOverviewViewModel(
     private val repository: PokemonRepository
 ) :
     ViewModel() {
+
     private var currentOffset: Int = 0
     private var generationData: List<Item.GenerationItem> = listOf()
     private var pokemonData: List<Item.PokemonItem> = listOf()
-    private var currentGenerationId: Int = 0
+    private var currentFilter: PokemonFilter = PokemonFilter.AllPokemonFilter
 
     private val _headerText = MutableLiveData(DEFAULT_HEADER_TEXT)
     fun getHeaderText(): LiveData<String> = _headerText
@@ -48,47 +45,36 @@ class PokemonOverviewViewModel(
     fun fetch() {
         if (pokemonData.isNotEmpty() && generationData.isNotEmpty()) {
             viewModelScope.launch {
+                onLoadState()
                 onGenerationResultState(generationData)
                 delay(1)
                 onPokemonResultState(pokemonData)
+                onLoadingFinishedState()
             }
         } else {
-            onLoadState()
             viewModelScope.launch {
                 loadGenerations()
                 loadPokemons()
-                onLoadingFinishedState()
             }
         }
 
     }
 
-    fun loadNextPokemons(offset: Int) {
+    fun loadNextPokemons(offset: Int) = viewModelScope.launch {
         currentOffset += offset
-        onLoadState()
-        viewModelScope.launch {
-            loadPokemons(offset = currentOffset)
-            onLoadingFinishedState()
-        }
+        loadPokemons(offset = currentOffset)
     }
 
     fun onGenerationItemClicked(id: Int, generationName: String) {
-        updateData(id, generationName)
-    }
-
-    private fun updateData(id: Int, generationName: String) {
-        onLoadState()
-        viewModelScope.launch {
-            currentGenerationId = id
-            currentOffset = 0
-            pokemonData = emptyList()
-            loadPokemons()
-            _headerText.value = generationName
-            onLoadingFinishedState()
-        }
+        currentFilter = PokemonFilter.GenerationPokemonFilter(id)
+        currentOffset = 0
+        pokemonData = emptyList()
+        viewModelScope.launch { loadPokemons() }
+        _headerText.value = generationName
     }
 
     private suspend fun loadGenerations() {
+        onLoadState()
         when (val result = repository.getGenerations()) {
             is Result.Success -> {
                 val generationItems = result.data.map { it.asItem() }
@@ -100,10 +86,12 @@ class PokemonOverviewViewModel(
                 onErrorState(result.exception)
             }
         }
+        onLoadingFinishedState()
     }
 
     private suspend fun loadPokemons(limit: Int = ITEMS_PER_PAGE, offset: Int = 0) {
-        when (val result = repository.getPokemons(currentGenerationId, limit, offset)) {
+        onLoadState()
+        when (val result: Result<List<PokemonEntity>> = loadPokemonByFilter(limit, offset)) {
             is Result.Success -> {
                 val pokemonItem = result.data.map { it.asItem() }
                 onPokemonResultState(pokemonItem)
@@ -113,6 +101,16 @@ class PokemonOverviewViewModel(
                 onErrorState(result.exception)
             }
         }
+        onLoadingFinishedState()
+    }
+
+    private suspend fun loadPokemonByFilter(limit: Int, offset: Int) = when (currentFilter) {
+        is PokemonFilter.AllPokemonFilter -> repository.getPokemons(limit, offset)
+        is PokemonFilter.GenerationPokemonFilter -> repository.getPokemonsByGeneration(
+            (currentFilter as PokemonFilter.GenerationPokemonFilter).id,
+            limit,
+            offset
+        )
     }
 
     private fun List<Item.GenerationItem>.provideGenerationDefaultItem(text: String) =

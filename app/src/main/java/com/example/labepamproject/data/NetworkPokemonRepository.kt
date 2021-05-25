@@ -12,7 +12,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import java.util.*
 
-class NetworkPokemonRepository(val api: PokedexApiService) : PokemonRepository {
+class NetworkPokemonRepository(private val api: PokedexApiService) : PokemonRepository {
 
     override suspend fun getPokemonByName(name: String): Result<PokemonEntity> =
         withContext(Dispatchers.IO) {
@@ -35,13 +35,12 @@ class NetworkPokemonRepository(val api: PokedexApiService) : PokemonRepository {
         }
 
     override suspend fun getPokemons(
-        generationId: Int,
         limit: Int,
         offset: Int
     ): Result<List<PokemonEntity>> =
         withContext(Dispatchers.IO) {
             try {
-                val pokemonNameList = fetchPokemonList(generationId, limit, offset)
+                val pokemonNameList = api.fetchPokemonList(limit, offset).results.map { it.name }
                 val pokemonDetailList = pokemonNameList.map { name ->
                     api.fetchPokemonInfo(name).toEntity()
                 }
@@ -51,10 +50,22 @@ class NetworkPokemonRepository(val api: PokedexApiService) : PokemonRepository {
             }
         }
 
-    private suspend fun fetchPokemonList(id: Int, limit: Int, offset: Int) =
-        if (isValidGenerationId(id)) {
-            api.fetchGenerationInfo(id).pokemons.getForPage(offset, offset + limit)
-        } else api.fetchPokemonList(limit, offset).results.map { it.name }
+    override suspend fun getPokemonsByGeneration(
+        generationId: Int,
+        limit: Int,
+        offset: Int
+    ): Result<List<PokemonEntity>> = withContext(Dispatchers.IO) {
+        try {
+            val pokemonNameList =
+                api.fetchGenerationInfo(generationId).pokemons.getForPage(offset, offset + limit)
+            val pokemonDetailList = pokemonNameList.map { name ->
+                api.fetchPokemonInfo(name).toEntity()
+            }
+            Result.Success(pokemonDetailList)
+        } catch (e: Exception) {
+            Result.Error(e)
+        }
+    }
 
     private fun List<PokemonPartialResponse>.getForPage(fromIndex: Int, toIndex: Int) =
         when {
@@ -62,8 +73,6 @@ class NetworkPokemonRepository(val api: PokedexApiService) : PokemonRepository {
             toIndex > size -> subList(fromIndex, size - 1).map { it.name }
             else -> subList(fromIndex, toIndex).map { it.name }
         }
-
-    private fun isValidGenerationId(id: Int) = id in 1..8
 
     private fun PokemonDetailedResponse.toEntity() =
         PokemonEntity(
