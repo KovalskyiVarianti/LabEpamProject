@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+    <ListPreference
+        android:key="@string/sp_key_item_size"
+        android:title="Items size"
+        android:entries="@array/item_size_names_array"
+        android:entryValues="@array/item_size_values_array"
+        android:defaultValue="3"
+        android:summary="Choose items size"
+        android:icon="@drawable/item" />
+</PreferenceScreen>

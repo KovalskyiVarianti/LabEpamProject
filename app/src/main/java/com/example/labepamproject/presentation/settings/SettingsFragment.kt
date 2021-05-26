@@ -12,6 +12,6 @@ class SettingsFragment : PreferenceFragmentCompat() {
     }
 
     private fun setAppName() {
-        (activity as AppCompatActivity).supportActionBar?.title = "Settings"
+        (activity as AppCompatActivity).supportActionBar?.title = getString(R.string.settings)
     }
 }
