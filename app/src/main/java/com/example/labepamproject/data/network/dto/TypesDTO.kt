@@ -1,4 +1,4 @@
-package com.example.labepamproject.data.network
+package com.example.labepamproject.data.network.dto
 
 data class PokemonTypesData(
     val slot: Int,

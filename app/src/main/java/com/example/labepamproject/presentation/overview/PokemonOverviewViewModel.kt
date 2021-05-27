@@ -8,8 +8,7 @@ import com.example.labepamproject.domain.PokemonEntity
 import com.example.labepamproject.domain.PokemonRepository
 import com.example.labepamproject.domain.Result
 import com.example.labepamproject.presentation.overview.adapter.Item
-import com.example.labepamproject.presentation.overview.adapter.Item.GenerationItem.Companion.asItem
-import com.example.labepamproject.presentation.overview.adapter.Item.PokemonItem.Companion.asItem
+import com.example.labepamproject.presentation.overview.adapter.asItem
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import timber.log.Timber
@@ -54,6 +53,7 @@ class PokemonOverviewViewModel(
         } else {
             viewModelScope.launch {
                 loadGenerations()
+                delay(1)
                 loadPokemons()
             }
         }
@@ -122,7 +122,7 @@ class PokemonOverviewViewModel(
         if (generationData.isEmpty()) {
             generationData = itemList
         }
-        _state.value = PokemonOverviewViewState.GenerationResultState(generationData)
+        _state.postValue(PokemonOverviewViewState.GenerationResultState(generationData))
         Timber.d("Generation loading is successful")
         Timber.d("Current state: ${_state.value}")
     }
@@ -131,13 +131,13 @@ class PokemonOverviewViewModel(
         if (!pokemonData.containsAll(itemList)) {
             pokemonData += itemList
         }
-        _state.value = PokemonOverviewViewState.PokemonResultState(pokemonData)
+        _state.postValue(PokemonOverviewViewState.PokemonResultState(pokemonData))
         Timber.d("Pokemon loading is successful")
         Timber.d("Current state: ${_state.value}")
     }
 
     private fun onLoadState() {
-        _state.value = PokemonOverviewViewState.LoadingState
+        _state.postValue(PokemonOverviewViewState.LoadingState)
         Timber.d("Current state: ${_state.value}")
     }
 

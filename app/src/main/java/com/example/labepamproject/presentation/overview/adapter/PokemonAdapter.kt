@@ -1,11 +1,9 @@
 package com.example.labepamproject.presentation.overview.adapter
 
-import android.graphics.Color
-import android.widget.ImageView
 import androidx.recyclerview.widget.DiffUtil
-import com.bumptech.glide.Glide
-import com.example.labepamproject.R
 import com.example.labepamproject.databinding.ItemPokemonOverviewBinding
+import com.example.labepamproject.presentation.getRandomColor
+import com.example.labepamproject.presentation.loadImage
 import com.hannesdorfmann.adapterdelegates4.AsyncListDifferDelegationAdapter
 import com.hannesdorfmann.adapterdelegates4.dsl.adapterDelegateViewBinding
 import timber.log.Timber
@@ -41,19 +39,6 @@ class PokemonAdapter(
                 Timber.d("Pokemon ${item.name} binded")
             }
         }
-
-    private fun Random.getRandomColor() = Color.rgb(
-        nextInt(256),
-        nextInt(256),
-        nextInt(256)
-    )
-
-    private fun ImageView.loadImage(url: String) {
-        Glide.with(context)
-            .load(url)
-            .placeholder(R.drawable.loading_image_placeholder)
-            .into(this)
-    }
 
     companion object PokemonDiffCallback : DiffUtil.ItemCallback<Item.PokemonItem>() {
         override fun areItemsTheSame(

@@ -1,8 +1,9 @@
 package com.example.labepamproject.presentation.overview.adapter
 
-import android.graphics.Color
 import androidx.recyclerview.widget.DiffUtil
 import com.example.labepamproject.databinding.ItemGenerationOverviewBinding
+import com.example.labepamproject.presentation.backgroundColorRGB
+import com.example.labepamproject.presentation.clickableItemColorRGB
 import com.hannesdorfmann.adapterdelegates4.AsyncListDifferDelegationAdapter
 import com.hannesdorfmann.adapterdelegates4.dsl.adapterDelegateViewBinding
 import timber.log.Timber
@@ -26,26 +27,36 @@ class GenerationAdapter(generationClickListener: (Int, String) -> Unit) :
             binding.root.setOnClickListener {
                 generationClickListener(item.id, item.text)
                 Timber.d("$item is clicked")
-                item.isPressed = true
-                items.forEach {
-                    if (it != item && it.isPressed) {
-                        it.isPressed = false
-                    }
-                }
+                setFlags(item)
                 notifyDataSetChanged()
             }
             bind {
-                if (!item.isPressed) {
-                    binding.root.isClickable = true
-                    binding.root.setCardBackgroundColor(Color.rgb(200, 253, 223))
-                } else {
-                    binding.root.setCardBackgroundColor(Color.rgb(135, 220, 246))
-                    binding.root.isClickable = false
-                }
+                checkFlags(item, binding)
                 binding.generationOverviewName.text = item.text
                 Timber.d("Generation $item binded")
             }
+
+
         }
+
+    private fun setFlags(item: Item.GenerationItem) {
+        item.isPressed = true
+        items.forEach {
+            if (it != item && it.isPressed) {
+                it.isPressed = false
+            }
+        }
+    }
+
+    private fun checkFlags(item: Item.GenerationItem, binding: ItemGenerationOverviewBinding) {
+        if (item.isPressed) {
+            binding.root.setCardBackgroundColor(backgroundColorRGB)
+            binding.root.isClickable = false
+        } else {
+            binding.root.isClickable = true
+            binding.root.setCardBackgroundColor(clickableItemColorRGB)
+        }
+    }
 
     companion object GenerationDiffCallback : DiffUtil.ItemCallback<Item.GenerationItem>() {
         override fun areItemsTheSame(

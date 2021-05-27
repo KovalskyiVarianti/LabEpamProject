@@ -7,7 +7,6 @@ import android.view.Menu
 import android.view.MenuInflater
 import android.view.MenuItem
 import android.view.View
-import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 import androidx.preference.PreferenceManager
@@ -20,6 +19,7 @@ import com.example.labepamproject.databinding.FragmentPokemonOverviewBinding
 import com.example.labepamproject.presentation.overview.adapter.GenerationAdapter
 import com.example.labepamproject.presentation.overview.adapter.Item
 import com.example.labepamproject.presentation.overview.adapter.PokemonAdapter
+import com.example.labepamproject.presentation.setFragmentTitle
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import timber.log.Timber
 
@@ -29,7 +29,7 @@ const val SPAN_COUNT_DEFAULT_VALUE = 3
 
 class PokemonOverviewFragment : Fragment(R.layout.fragment_pokemon_overview) {
 
-    private lateinit var binding: FragmentPokemonOverviewBinding
+    private var binding: FragmentPokemonOverviewBinding? = null
     private var pokemonAdapter: PokemonAdapter? = null
     private var generationAdapter: GenerationAdapter? = null
     private val viewModel: PokemonOverviewViewModel by viewModel()
@@ -37,6 +37,7 @@ class PokemonOverviewFragment : Fragment(R.layout.fragment_pokemon_overview) {
     private var spanCount: Int? = null
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
         setHasOptionsMenu(true)
         binding = FragmentPokemonOverviewBinding.bind(view)
         provideViewModel()
@@ -50,17 +51,13 @@ class PokemonOverviewFragment : Fragment(R.layout.fragment_pokemon_overview) {
             provideGenerationAdapter()
         )
         viewModel.fetch()
-        setAppName()
+        setFragmentTitle(activity, getString(R.string.app_name))
     }
 
     private fun provideSharedPreferences() = PreferenceManager.getDefaultSharedPreferences(activity)
 
     private fun provideSpanCount() {
         spanCount = sharedPreferences?.getString(getString(R.string.sp_key_item_size), "3")?.toInt()
-    }
-
-    private fun setAppName() {
-        (activity as AppCompatActivity).supportActionBar?.title = getString(R.string.app_name)
     }
 
     private fun provideViewModel() {
@@ -72,7 +69,7 @@ class PokemonOverviewFragment : Fragment(R.layout.fragment_pokemon_overview) {
     }
 
     private fun showHeader(headerText: String) {
-        binding.headerOverviewText.text = headerText
+        binding?.let { it.headerOverviewText.text = headerText }
     }
 
     private fun showPokemonDetails(pokemonItemParams: Pair<String, Int>?) {
@@ -109,16 +106,13 @@ class PokemonOverviewFragment : Fragment(R.layout.fragment_pokemon_overview) {
 
     private fun providePokemonRecyclerView(spanCount: Int, pokemonItemAdapter: PokemonAdapter) {
         pokemonAdapter = pokemonItemAdapter
-        binding.pokemonList.apply {
-            layoutManager = provideGridLayoutManager(spanCount)
-            adapter = pokemonAdapter
-            provideScrollListener()
+        binding?.let {
+            it.pokemonList.apply {
+                layoutManager = provideGridLayoutManager(spanCount)
+                adapter = pokemonAdapter
+                provideScrollListener()
+            }
         }
-    }
-
-    private fun provideGenerationRecyclerView(generationItemAdapter: GenerationAdapter) {
-        generationAdapter = generationItemAdapter
-        binding.generationList.adapter = generationAdapter
     }
 
     private fun RecyclerView.provideScrollListener() {
@@ -143,6 +137,11 @@ class PokemonOverviewFragment : Fragment(R.layout.fragment_pokemon_overview) {
                 return layoutManager.findLastCompletelyVisibleItemPosition() + 1
             }
         })
+    }
+
+    private fun provideGenerationRecyclerView(generationItemAdapter: GenerationAdapter) {
+        generationAdapter = generationItemAdapter
+        binding?.let { it.generationList.adapter = generationAdapter }
     }
 
     private fun providePokemonAdapter() = PokemonAdapter(
@@ -177,7 +176,7 @@ class PokemonOverviewFragment : Fragment(R.layout.fragment_pokemon_overview) {
 
     override fun onDestroyView() {
         super.onDestroyView()
-        //binding = null
+        binding = null
     }
 
     private fun loadPokemons(contentList: List<Item.PokemonItem>) {
@@ -189,23 +188,31 @@ class PokemonOverviewFragment : Fragment(R.layout.fragment_pokemon_overview) {
     }
 
     private fun showErrorMessage(errorMessage: String) {
-        binding.loadingStateImage.visibility = View.GONE
-        binding.errorMessage.text = errorMessage
-        binding.errorMessage.visibility = View.VISIBLE
+        binding?.let {
+            it.loadingStateImage.visibility = View.GONE
+            it.errorMessage.text = errorMessage
+            it.errorMessage.visibility = View.VISIBLE
+        }
     }
 
     private fun showLoadingAnimation() {
-        Glide.with(binding.loadingStateImage.context)
-            .asGif()
-            .load(R.drawable.loading_anim)
-            .into(binding.loadingStateImage)
-        binding.loadingStateImage.visibility = View.VISIBLE
-        binding.errorMessage.visibility = View.GONE
+        binding?.let {
+            Glide.with(it.loadingStateImage.context)
+                .asGif()
+                .load(R.drawable.loading_anim)
+                .into(it.loadingStateImage)
+            it.loadingStateImage.visibility = View.VISIBLE
+            it.errorMessage.visibility = View.GONE
+            it.generationList.isFocusable = false
+        }
     }
 
     private fun showContent() {
-        binding.loadingStateImage.visibility = View.GONE
-        binding.errorMessage.visibility = View.GONE
+        binding?.let {
+            it.loadingStateImage.visibility = View.GONE
+            it.errorMessage.visibility = View.GONE
+
+        }
     }
 
 }

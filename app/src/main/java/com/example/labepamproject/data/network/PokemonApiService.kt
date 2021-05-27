@@ -1,5 +1,9 @@
 package com.example.labepamproject.data.network
 
+import com.example.labepamproject.data.network.dto.GenerationDetailedResponse
+import com.example.labepamproject.data.network.dto.GenerationListResponse
+import com.example.labepamproject.data.network.dto.PokemonDetailedResponse
+import com.example.labepamproject.data.network.dto.PokemonListResponse
 import retrofit2.http.GET
 import retrofit2.http.Path
 import retrofit2.http.Query

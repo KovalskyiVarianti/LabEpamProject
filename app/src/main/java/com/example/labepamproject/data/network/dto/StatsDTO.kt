@@ -1,4 +1,4 @@
-package com.example.labepamproject.data.network
+package com.example.labepamproject.data.network.dto
 
 import com.squareup.moshi.Json
 
