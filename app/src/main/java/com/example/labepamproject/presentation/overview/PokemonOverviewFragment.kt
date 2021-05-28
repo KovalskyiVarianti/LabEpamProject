@@ -20,6 +20,7 @@ import com.example.labepamproject.presentation.overview.adapter.GenerationAdapte
 import com.example.labepamproject.presentation.overview.adapter.Item
 import com.example.labepamproject.presentation.overview.adapter.PokemonAdapter
 import com.example.labepamproject.presentation.setFragmentTitle
+import com.google.android.material.snackbar.Snackbar
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import timber.log.Timber
 
@@ -100,7 +101,7 @@ class PokemonOverviewFragment : Fragment(R.layout.fragment_pokemon_overview) {
             showErrorMessage(state.errorMessage)
         }
         is PokemonOverviewViewState.LoadingFinishedState -> {
-            showContent()
+            stopLoading()
         }
     }
 
@@ -188,10 +189,11 @@ class PokemonOverviewFragment : Fragment(R.layout.fragment_pokemon_overview) {
     }
 
     private fun showErrorMessage(errorMessage: String) {
-        binding?.let {
-            it.loadingStateImage.visibility = View.GONE
-            it.errorMessage.text = errorMessage
-            it.errorMessage.visibility = View.VISIBLE
+        binding?.let { binding ->
+            binding.loadingStateImage.visibility = View.GONE
+            Snackbar.make(
+                binding.root.rootView, errorMessage, Snackbar.LENGTH_LONG
+            ).show()
         }
     }
 
@@ -202,16 +204,13 @@ class PokemonOverviewFragment : Fragment(R.layout.fragment_pokemon_overview) {
                 .load(R.drawable.loading_anim)
                 .into(it.loadingStateImage)
             it.loadingStateImage.visibility = View.VISIBLE
-            it.errorMessage.visibility = View.GONE
             it.generationList.isFocusable = false
         }
     }
 
-    private fun showContent() {
+    private fun stopLoading() {
         binding?.let {
             it.loadingStateImage.visibility = View.GONE
-            it.errorMessage.visibility = View.GONE
-
         }
     }
 

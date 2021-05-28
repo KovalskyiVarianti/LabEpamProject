@@ -2,6 +2,7 @@ package com.example.labepamproject.presentation.overview.adapter
 
 import androidx.recyclerview.widget.DiffUtil
 import com.example.labepamproject.databinding.ItemPokemonOverviewBinding
+import com.example.labepamproject.presentation.fromCapitalLetter
 import com.example.labepamproject.presentation.getRandomColor
 import com.example.labepamproject.presentation.loadImage
 import com.hannesdorfmann.adapterdelegates4.AsyncListDifferDelegationAdapter
@@ -34,7 +35,7 @@ class PokemonAdapter(
             }
             bind {
                 binding.pokemonOverviewImage.setBackgroundColor(color)
-                binding.pokemonOverviewName.text = item.name
+                binding.pokemonOverviewName.text = item.name.fromCapitalLetter()
                 binding.pokemonOverviewImage.loadImage(item.imgSrc)
                 Timber.d("Pokemon ${item.name} binded")
             }

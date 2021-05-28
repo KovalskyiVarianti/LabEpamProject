@@ -23,6 +23,8 @@ fun setFragmentTitle(activity: FragmentActivity?, title: String) {
     (activity as AppCompatActivity).supportActionBar?.title = title
 }
 
+fun String.fromCapitalLetter() = replaceFirst(this[0], this[0].toUpperCase())
+
 fun Random.getRandomColor() = Color.rgb(
     nextInt(256),
     nextInt(256),

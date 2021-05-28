@@ -26,6 +26,7 @@ class NetworkRoomPokemonRepository(
                     try {
                         database.pokemonDao.getPokemonByName(name).asEntity()
                     } catch (e: Exception) {
+                        Timber.d(e)
                         api.fetchPokemonInfo(name).asEntity().cacheAndReturn()
                     }
                 )
@@ -53,6 +54,7 @@ class NetworkRoomPokemonRepository(
                     try {
                         getCachedPokemons(limit, offset)
                     } catch (e: Exception) {
+                        Timber.d(e)
                         api.fetchPokemonList(limit, offset).results
                             .map { api.fetchPokemonInfo(it.name).asEntity() }
                             .cacheAndReturn()
