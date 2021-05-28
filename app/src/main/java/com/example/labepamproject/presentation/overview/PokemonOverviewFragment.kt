@@ -19,7 +19,6 @@ import com.example.labepamproject.databinding.FragmentPokemonOverviewBinding
 import com.example.labepamproject.presentation.overview.adapter.GenerationAdapter
 import com.example.labepamproject.presentation.overview.adapter.Item
 import com.example.labepamproject.presentation.overview.adapter.PokemonAdapter
-import com.example.labepamproject.presentation.setFragmentTitle
 import com.google.android.material.snackbar.Snackbar
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import timber.log.Timber
@@ -52,7 +51,6 @@ class PokemonOverviewFragment : Fragment(R.layout.fragment_pokemon_overview) {
             provideGenerationAdapter()
         )
         viewModel.fetch()
-        setFragmentTitle(activity, getString(R.string.app_name))
     }
 
     private fun provideSharedPreferences() = PreferenceManager.getDefaultSharedPreferences(activity)
