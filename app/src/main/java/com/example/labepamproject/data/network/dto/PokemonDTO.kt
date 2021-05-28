@@ -1,6 +1,8 @@
 package com.example.labepamproject.data.network.dto
 
+import com.example.labepamproject.data.database.PokemonDatabaseEntity
 import com.example.labepamproject.domain.PokemonEntity
+import com.example.labepamproject.presentation.generateUrlFromId
 import com.squareup.moshi.Json
 
 data class PokemonListResponse(
@@ -24,10 +26,10 @@ data class PokemonDetailedResponse(
     val types: List<PokemonTypesData>,
 )
 
-fun PokemonDetailedResponse.toEntity() =
+fun PokemonDetailedResponse.asEntity() =
     PokemonEntity(
         id = id,
-        name = name.replaceFirst(name[0], name[0].toUpperCase()),
+        name = name,
         prevImgUrl = generateUrlFromId(id),
         experience = experience,
         height = height,
@@ -37,5 +39,14 @@ fun PokemonDetailedResponse.toEntity() =
         types = types.map { it.type.name }
     )
 
-private fun generateUrlFromId(id: Int): String =
-    "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/$id.png"
+fun PokemonDetailedResponse.asDatabaseEntity() =
+    PokemonDatabaseEntity(
+        id = id,
+        name = name,
+        experience = experience,
+        height = height,
+        weight = weight,
+        abilities = abilities.map { it.ability.name },
+        stats = stats.map { it.stat.name to it.base_stat },
+        types = types.map { it.type.name }
+    )

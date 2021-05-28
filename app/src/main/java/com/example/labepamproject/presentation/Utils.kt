@@ -16,6 +16,9 @@ fun ImageView.loadImage(url: String) =
         .placeholder(R.drawable.loading_image_placeholder)
         .into(this)
 
+fun generateUrlFromId(id: Int): String =
+    "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/$id.png"
+
 fun setFragmentTitle(activity: FragmentActivity?, title: String) {
     (activity as AppCompatActivity).supportActionBar?.title = title
 }

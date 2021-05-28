@@ -20,7 +20,7 @@ data class GenerationDetailedResponse(
 )
 
 
-fun GenerationPartialResponse.toEntity() =
+fun GenerationPartialResponse.asEntity() =
     GenerationEntity(getGenerationId(name), name.toUpperCase(Locale.ROOT))
 
 private fun getGenerationId(text: String) = when (text) {

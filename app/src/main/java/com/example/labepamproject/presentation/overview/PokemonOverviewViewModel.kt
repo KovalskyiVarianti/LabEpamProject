@@ -61,18 +61,23 @@ class PokemonOverviewViewModel(
     }
 
     fun loadNextPokemons(offset: Int) = viewModelScope.launch {
-        currentOffset += offset
+        currentOffset = offset
+        Timber.d("current offset = $currentOffset")
         loadPokemons(offset = currentOffset)
     }
 
     fun onGenerationItemClicked(id: Int, generationName: String) {
-        currentFilter = if (id in 1..8) {
-            PokemonFilter.GenerationPokemonFilter(id)
-        } else PokemonFilter.AllPokemonFilter
+        checkFilters(id)
         currentOffset = 0
         pokemonData = emptyList()
         viewModelScope.launch { loadPokemons() }
         _headerText.value = generationName
+    }
+
+    private fun checkFilters(id: Int) {
+        currentFilter = if (id in 1..8) {
+            PokemonFilter.GenerationPokemonFilter(id)
+        } else PokemonFilter.AllPokemonFilter
     }
 
     private suspend fun loadGenerations() {
@@ -95,8 +100,9 @@ class PokemonOverviewViewModel(
         onLoadState()
         when (val result: Result<List<PokemonEntity>> = loadPokemonByFilter(limit, offset)) {
             is Result.Success -> {
-                val pokemonItem = result.data.map { it.asItem() }
-                onPokemonResultState(pokemonItem)
+                currentOffset += offset
+                val pokemon = result.data.map { it.asItem() }
+                onPokemonResultState(pokemon)
             }
             is Result.Error -> {
                 Timber.e(result.exception)
@@ -128,12 +134,13 @@ class PokemonOverviewViewModel(
     }
 
     private fun onPokemonResultState(itemList: List<Item.PokemonItem>) {
-        if (!pokemonData.containsAll(itemList)) {
+        if (!pokemonData.containsAll(itemList).also { Timber.d("Is new items: $it") }) {
             pokemonData += itemList
         }
         _state.postValue(PokemonOverviewViewState.PokemonResultState(pokemonData))
         Timber.d("Pokemon loading is successful")
         Timber.d("Current state: ${_state.value}")
+
     }
 
     private fun onLoadState() {

@@ -2,22 +2,20 @@ package com.example.labepamproject.data
 
 import com.example.labepamproject.data.network.PokedexApiService
 import com.example.labepamproject.data.network.dto.PokemonPartialResponse
-import com.example.labepamproject.data.network.dto.toEntity
+import com.example.labepamproject.data.network.dto.asEntity
 import com.example.labepamproject.domain.GenerationEntity
 import com.example.labepamproject.domain.PokemonEntity
 import com.example.labepamproject.domain.PokemonRepository
 import com.example.labepamproject.domain.Result
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
-import java.util.*
 
 class NetworkPokemonRepository(private val api: PokedexApiService) : PokemonRepository {
 
     override suspend fun getPokemonByName(name: String): Result<PokemonEntity> =
         withContext(Dispatchers.IO) {
             try {
-                val pokemon = api.fetchPokemonInfo(name.toLowerCase(Locale.ROOT)).toEntity()
-                Result.Success(pokemon)
+                Result.Success(api.fetchPokemonInfo(name).asEntity())
             } catch (e: Exception) {
                 Result.Error(e)
             }
@@ -26,8 +24,7 @@ class NetworkPokemonRepository(private val api: PokedexApiService) : PokemonRepo
     override suspend fun getGenerations(): Result<List<GenerationEntity>> =
         withContext(Dispatchers.IO) {
             try {
-                val generationList = api.fetchGenerationList().results.map { it.toEntity() }
-                Result.Success(generationList)
+                Result.Success(api.fetchGenerationList().results.map { it.asEntity() })
             } catch (e: Exception) {
                 Result.Error(e)
             }
@@ -39,11 +36,10 @@ class NetworkPokemonRepository(private val api: PokedexApiService) : PokemonRepo
     ): Result<List<PokemonEntity>> =
         withContext(Dispatchers.IO) {
             try {
-                val pokemonNameList = api.fetchPokemonList(limit, offset).results.map { it.name }
-                val pokemonDetailList = pokemonNameList.map { name ->
-                    api.fetchPokemonInfo(name).toEntity()
-                }
-                Result.Success(pokemonDetailList)
+                Result.Success(
+                    api.fetchPokemonList(limit, offset).results
+                        .map { api.fetchPokemonInfo(it.name).asEntity() }
+                )
             } catch (e: Exception) {
                 Result.Error(e)
             }
@@ -55,12 +51,13 @@ class NetworkPokemonRepository(private val api: PokedexApiService) : PokemonRepo
         offset: Int
     ): Result<List<PokemonEntity>> = withContext(Dispatchers.IO) {
         try {
-            val pokemonNameList =
-                api.fetchGenerationInfo(generationId).pokemons.getForPage(offset, offset + limit)
-            val pokemonDetailList = pokemonNameList.map { name ->
-                api.fetchPokemonInfo(name).toEntity()
-            }
-            Result.Success(pokemonDetailList)
+            Result.Success(
+                api.fetchGenerationInfo(generationId).pokemons
+                    .getForPage(offset, offset + limit)
+                    .map { name ->
+                        api.fetchPokemonInfo(name).asEntity()
+                    }
+            )
         } catch (e: Exception) {
             Result.Error(e)
         }

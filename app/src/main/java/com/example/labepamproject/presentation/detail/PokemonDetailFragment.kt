@@ -10,7 +10,6 @@ import com.example.labepamproject.R
 import com.example.labepamproject.databinding.FragmentPokemonDetailBinding
 import com.example.labepamproject.domain.PokemonEntity
 import com.example.labepamproject.presentation.loadImage
-import com.example.labepamproject.presentation.setFragmentTitle
 import com.skydoves.progressview.ProgressView
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import org.koin.core.parameter.parametersOf
@@ -38,7 +37,7 @@ class PokemonDetailFragment : Fragment(R.layout.fragment_pokemon_detail) {
             }
         }
         viewModel.fetch()
-        setFragmentTitle(activity, navArgs.pokemonName)
+       // setFragmentTitle(activity, navArgs.pokemonName)
     }
 
     private fun showContent(pokemonEntity: PokemonEntity) {

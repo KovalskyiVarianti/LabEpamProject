@@ -124,7 +124,7 @@ class PokemonOverviewFragment : Fragment(R.layout.fragment_pokemon_overview) {
                     val currentItemNumber = getCurrentItemNumber(recyclerView)
                     Timber.d("$itemCount, $currentItemNumber")
                     if (itemCount == currentItemNumber) {
-                        viewModel.loadNextPokemons(ITEMS_PER_PAGE)
+                        viewModel.loadNextPokemons(itemCount)
                     }
                 }
             }

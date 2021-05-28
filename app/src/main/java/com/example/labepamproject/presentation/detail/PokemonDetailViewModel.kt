@@ -22,6 +22,7 @@ class PokemonDetailViewModel(
         viewModelScope.launch {
             when (val result = repository.getPokemonByName(pokemonName)) {
                 is Result.Success -> {
+                    Timber.d("${result.data}")
                     onResultState(result.data)
                 }
                 is Result.Error -> {
