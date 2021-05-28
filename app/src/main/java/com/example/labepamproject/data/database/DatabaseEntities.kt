@@ -14,7 +14,7 @@ data class PokemonDatabaseEntity(
     @PrimaryKey
     val id: Int,
     val name: String,
-    val experience: Int,
+    val experience: Float,
     val height: Int,
     val weight: Int,
     val abilities: List<String>,
@@ -56,7 +56,7 @@ object PokemonTypeConverter {
 
     @TypeConverter
     fun toAbilitiesOrTypes(data: String): List<String> {
-        return data.split(",")
+        return data.split(", ")
     }
 
     @TypeConverter
@@ -66,7 +66,7 @@ object PokemonTypeConverter {
 
     @TypeConverter
     fun toStats(data: String): List<Pair<String, Float>> {
-        return data.split(",").map {
+        return data.split(", ").map {
             val pair = it.split(":")
             pair[0].trim() to pair[1].toFloat()
         }

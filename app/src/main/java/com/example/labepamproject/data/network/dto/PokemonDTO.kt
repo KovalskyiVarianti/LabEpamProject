@@ -18,7 +18,7 @@ data class PokemonPartialResponse(
 data class PokemonDetailedResponse(
     val id: Int,
     val name: String,
-    @field:Json(name = "base_experience") val experience: Int,
+    @field:Json(name = "base_experience") val experience: Float,
     val height: Int,
     val weight: Int,
     val abilities: List<PokemonAbilityData>,

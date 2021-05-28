@@ -5,7 +5,7 @@ data class PokemonEntity(
     val id: Int,
     val name: String,
     val prevImgUrl: String,
-    val experience: Int,
+    val experience: Float,
     val height: Int,
     val weight: Int,
     val abilities: List<String>,

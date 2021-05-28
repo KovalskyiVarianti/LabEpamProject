@@ -15,6 +15,7 @@ import com.example.labepamproject.presentation.setFragmentTitle
 import com.skydoves.progressview.ProgressView
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import org.koin.core.parameter.parametersOf
+import timber.log.Timber
 
 class PokemonDetailFragment : Fragment(R.layout.fragment_pokemon_detail) {
 
@@ -39,21 +40,30 @@ class PokemonDetailFragment : Fragment(R.layout.fragment_pokemon_detail) {
             }
         }
         viewModel.fetch()
-        setFragmentTitle(activity, navArgs.pokemonName.fromCapitalLetter())
+        setFragmentTitle(
+            activity,
+            navArgs.pokemonName.fromCapitalLetter()
+        ).also { Timber.d("Set name") }
     }
 
     private fun showContent(pokemonEntity: PokemonEntity) {
+        setFragmentTitle(activity, pokemonEntity.name.fromCapitalLetter())
         binding?.let { pokemonDetailBinding ->
-            pokemonDetailBinding.pokemonDetailImage.setBackgroundColor(navArgs.itemColor)
-            pokemonDetailBinding.pokemonDetailImage.loadImage(pokemonEntity.prevImgUrl)
-            pokemonDetailBinding.pokemonDetailName.text =
-                "height: ${pokemonEntity.height}\t" +
-                        "weight: ${pokemonEntity.weight}\t" +
-                        "experience: ${pokemonEntity.experience}\n" +
-                        "abilities: ${pokemonEntity.abilities.joinToString { it }}\n" +
-                        "types: ${pokemonEntity.types.joinToString { it }}\n"
+            pokemonDetailBinding.apply {
+                pokemonDetailImage.setBackgroundColor(navArgs.itemColor)
+                pokemonDetailImage.loadImage(pokemonEntity.prevImgUrl)
+                experienceBar.labelText = "${pokemonEntity.experience} exp."
+                experienceBar.progress = pokemonEntity.experience
+                pokemonHeight.text = "Height: ${pokemonEntity.height}"
+                pokemonWeight.text = "Weight: ${pokemonEntity.weight}"
+                pokemonAbilities.text =
+                    "Abilities:\n${pokemonEntity.abilities.joinToString("") { "$it\n" }}"
+                pokemonTypes.text =
+                    "Types:\n${pokemonEntity.types.joinToString("") { "$it\n" }}"
+            }
         }
         pokemonEntity.stats.forEach(::setValues)
+
     }
 
     @RequiresApi(Build.VERSION_CODES.O)

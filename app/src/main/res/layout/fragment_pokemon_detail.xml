@@ -26,14 +26,57 @@
             tools:src="@mipmap/ic_launcher" />
     </androidx.cardview.widget.CardView>
 
-    <TextView
-        android:id="@+id/pokemon_detail_name"
+    <com.skydoves.progressview.ProgressView
+        android:id="@+id/experience_bar"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="15dp"
+        android:layout_margin="@dimen/stat_bar_margin"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/pokemon_cardview"
-        tools:text="SOME NAME" />
+        app:layout_constraintTop_toBottomOf="@id/pokemon_cardview"
+        app:progressView_colorProgress="#EBFF3B"
+        app:progressView_labelColorInner="@color/black"
+        app:progressView_labelSize="10sp" />
+
+    <TextView
+        android:id="@+id/pokemon_height"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_margin="7dp"
+        android:textSize="30sp"
+        app:layout_constraintEnd_toStartOf="@id/pokemon_weight"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/experience_bar" />
+
+    <TextView
+        android:id="@+id/pokemon_weight"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_margin="7dp"
+        android:textSize="30sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@id/pokemon_height"
+        app:layout_constraintTop_toBottomOf="@id/experience_bar" />
+
+    <TextView
+        android:id="@+id/pokemon_abilities"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_margin="7dp"
+        android:textSize="20sp"
+        app:layout_constraintEnd_toStartOf="@id/pokemon_types"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/pokemon_height" />
+
+    <TextView
+        android:id="@+id/pokemon_types"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_margin="7dp"
+        android:textSize="20sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@id/pokemon_abilities"
+        app:layout_constraintTop_toBottomOf="@id/pokemon_weight" />
 
     <ImageView
         android:id="@+id/hp_stat_image"
@@ -53,7 +96,7 @@
         android:layout_margin="@dimen/stat_bar_margin"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@id/hp_stat_image"
-        app:layout_constraintTop_toBottomOf="@id/pokemon_detail_name"
+        app:layout_constraintTop_toBottomOf="@id/pokemon_types"
         app:progressView_labelSize="15sp" />
 
     <ImageView
