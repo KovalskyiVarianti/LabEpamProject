@@ -6,6 +6,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.FragmentActivity
 import com.bumptech.glide.Glide
 import com.example.labepamproject.R
+import java.net.UnknownHostException
 import kotlin.random.Random
 
 val backgroundColorRGB = Color.rgb(135, 220, 246)
@@ -30,3 +31,8 @@ fun Random.getRandomColor() = Color.rgb(
     nextInt(256),
     nextInt(256)
 )
+
+fun resolveError(error: Throwable): String = when (error) {
+    is UnknownHostException -> "You are offline! Check your connection"
+    else -> "Some unexpected error"
+}

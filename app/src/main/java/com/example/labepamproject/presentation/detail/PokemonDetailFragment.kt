@@ -2,8 +2,12 @@ package com.example.labepamproject.presentation.detail
 
 import android.os.Build
 import android.os.Bundle
+import android.view.Menu
+import android.view.MenuInflater
+import android.view.MenuItem
 import android.view.View
 import androidx.annotation.RequiresApi
+import androidx.core.app.ShareCompat
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.navArgs
 import com.example.labepamproject.R
@@ -12,6 +16,7 @@ import com.example.labepamproject.domain.PokemonEntity
 import com.example.labepamproject.presentation.fromCapitalLetter
 import com.example.labepamproject.presentation.loadImage
 import com.example.labepamproject.presentation.setFragmentTitle
+import com.google.android.material.snackbar.Snackbar
 import com.skydoves.progressview.ProgressView
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import org.koin.core.parameter.parametersOf
@@ -29,21 +34,50 @@ class PokemonDetailFragment : Fragment(R.layout.fragment_pokemon_detail) {
         viewModel.getState().observe(viewLifecycleOwner) { state ->
             when (state) {
                 is PokemonDetailViewState.LoadingState -> {
-                    //showLoadingAnimation()
+                    showLoadingAnimation()
                 }
                 is PokemonDetailViewState.ResultState -> {
                     showContent(state.pokemonEntity)
                 }
                 is PokemonDetailViewState.ErrorState -> {
-                    //showErrorMessage(state.errorMessage)
+                    showErrorMessage(state.errorMessage)
                 }
             }
         }
         viewModel.fetch()
+        setHasOptionsMenu(true)
         setFragmentTitle(
             activity,
             navArgs.pokemonName.fromCapitalLetter()
         ).also { Timber.d("Set name") }
+    }
+
+    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
+        super.onCreateOptionsMenu(menu, inflater)
+        inflater.inflate(R.menu.pokemon_detail_menu, menu)
+
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        startActivity(
+            viewModel.buildShareIntent(
+                ShareCompat.IntentBuilder(requireContext()),
+                getString(R.string.pokemon_share_message, navArgs.pokemonName)
+            )
+        )
+        return super.onOptionsItemSelected(item)
+    }
+
+    private fun showErrorMessage(errorMessage: String) {
+        binding?.let { binding ->
+            Snackbar.make(
+                binding.root.rootView, errorMessage, Snackbar.LENGTH_LONG
+            ).show()
+        }
+    }
+
+    private fun showLoadingAnimation() {
+
     }
 
     private fun showContent(pokemonEntity: PokemonEntity) {
@@ -54,16 +88,17 @@ class PokemonDetailFragment : Fragment(R.layout.fragment_pokemon_detail) {
                 pokemonDetailImage.loadImage(pokemonEntity.prevImgUrl)
                 experienceBar.labelText = "${pokemonEntity.experience} exp."
                 experienceBar.progress = pokemonEntity.experience
-                pokemonHeight.text = "Height: ${pokemonEntity.height}"
-                pokemonWeight.text = "Weight: ${pokemonEntity.weight}"
-                pokemonAbilities.text =
-                    "Abilities:\n${pokemonEntity.abilities.joinToString("") { "$it\n" }}"
-                pokemonTypes.text =
-                    "Types:\n${pokemonEntity.types.joinToString("") { "$it\n" }}"
+                pokemonHeight.text = getString(R.string.pokemon_height_text, pokemonEntity.height)
+                pokemonWeight.text = getString(R.string.pokemon_weight_text, pokemonEntity.weight)
+                pokemonAbilities.text = getString(
+                    R.string.pokemon_abilities_text,
+                    pokemonEntity.abilities.joinToString("") { "$it\n" })
+                pokemonTypes.text = getString(
+                    R.string.pokemon_types_text,
+                    pokemonEntity.types.joinToString("") { "$it\n" })
             }
         }
         pokemonEntity.stats.forEach(::setValues)
-
     }
 
     @RequiresApi(Build.VERSION_CODES.O)

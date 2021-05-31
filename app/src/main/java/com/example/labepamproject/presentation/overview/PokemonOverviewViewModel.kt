@@ -9,10 +9,10 @@ import com.example.labepamproject.domain.PokemonRepository
 import com.example.labepamproject.domain.Result
 import com.example.labepamproject.presentation.overview.adapter.Item
 import com.example.labepamproject.presentation.overview.adapter.asItem
+import com.example.labepamproject.presentation.resolveError
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import timber.log.Timber
-import java.net.UnknownHostException
 
 class PokemonOverviewViewModel(
     private val repository: PokemonRepository
@@ -154,11 +154,6 @@ class PokemonOverviewViewModel(
             PokemonOverviewViewState.ErrorState(resolveError(error))
         Timber.d("Current state: ${_state.value}")
         Timber.e(error)
-    }
-
-    private fun resolveError(error: Throwable): String = when (error) {
-        is UnknownHostException -> "You are offline! Check your connection"
-        else -> "Some unexpected error"
     }
 
     private fun onLoadingFinishedState() {

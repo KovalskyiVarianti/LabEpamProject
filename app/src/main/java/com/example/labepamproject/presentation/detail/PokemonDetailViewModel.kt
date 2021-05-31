@@ -1,5 +1,7 @@
 package com.example.labepamproject.presentation.detail
 
+import android.content.Intent
+import androidx.core.app.ShareCompat
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -31,6 +33,13 @@ class PokemonDetailViewModel(
                 }
             }
         }
+    }
+
+    fun buildShareIntent(intentBuilder: ShareCompat.IntentBuilder, text: String): Intent {
+        return intentBuilder
+            .setText(text)
+            .setType("text/plain")
+            .intent
     }
 
     private fun onResultState(pokemon: PokemonEntity) {
