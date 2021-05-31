@@ -1,5 +1,6 @@
 package com.example.labepamproject.presentation.overview.adapter
 
+import android.widget.ImageView
 import androidx.recyclerview.widget.DiffUtil
 import com.example.labepamproject.databinding.ItemPokemonOverviewBinding
 import com.example.labepamproject.presentation.fromCapitalLetter
@@ -11,7 +12,7 @@ import timber.log.Timber
 import kotlin.random.Random
 
 class PokemonAdapter(
-    pokemonClickListener: (String, Int) -> Unit,
+    pokemonClickListener: (imageView: ImageView, String, Int) -> Unit,
 ) :
     AsyncListDifferDelegationAdapter<Item.PokemonItem>(PokemonDiffCallback) {
 
@@ -19,7 +20,7 @@ class PokemonAdapter(
         delegatesManager.addDelegate(pokemonAdapterDelegate(pokemonClickListener))
     }
 
-    private fun pokemonAdapterDelegate(pokemonClickListener: (String, Int) -> Unit) =
+    private fun pokemonAdapterDelegate(pokemonClickListener: (ImageView, String, Int) -> Unit) =
         adapterDelegateViewBinding<Item.PokemonItem, Item.PokemonItem, ItemPokemonOverviewBinding>(
             { layoutInflater, parent ->
                 ItemPokemonOverviewBinding.inflate(
@@ -31,11 +32,14 @@ class PokemonAdapter(
         ) {
             val color = Random.getRandomColor()
             binding.root.setOnClickListener {
-                pokemonClickListener(item.name, color)
+                pokemonClickListener(binding.pokemonOverviewImage, item.name, color)
             }
             bind {
-                binding.pokemonOverviewImage.setBackgroundColor(color)
+                binding.pokemonOverviewImageCardview.setCardBackgroundColor(color)
                 binding.pokemonOverviewName.text = item.name.fromCapitalLetter()
+                if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.LOLLIPOP) {
+                    binding.pokemonOverviewImage.transitionName = item.name
+                }
                 binding.pokemonOverviewImage.loadImage(item.imgSrc)
                 Timber.d("Pokemon ${item.name} binded")
             }

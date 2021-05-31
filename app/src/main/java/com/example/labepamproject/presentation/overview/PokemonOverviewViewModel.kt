@@ -1,5 +1,6 @@
 package com.example.labepamproject.presentation.overview
 
+import android.widget.ImageView
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -30,12 +31,14 @@ class PokemonOverviewViewModel(
     private val _state = MutableLiveData<PokemonOverviewViewState>()
     fun getState(): LiveData<PokemonOverviewViewState> = _state
 
-    private val _navigateToPokemonDetailFragment = MutableLiveData<Pair<String, Int>?>()
-    fun navigateToPokemonDetailFragment(): MutableLiveData<Pair<String, Int>?> =
+    private val _navigateToPokemonDetailFragment =
+        MutableLiveData<Triple<ImageView, String, Int>?>()
+
+    fun navigateToPokemonDetailFragment(): MutableLiveData<Triple<ImageView, String, Int>?> =
         _navigateToPokemonDetailFragment
 
-    fun onPokemonItemClicked(name: String, color: Int) {
-        _navigateToPokemonDetailFragment.value = name to color
+    fun onPokemonItemClicked(imageView: ImageView, name: String, color: Int) {
+        _navigateToPokemonDetailFragment.value = Triple(imageView, name, color)
     }
 
     fun onPokemonDetailFragmentNavigated() {

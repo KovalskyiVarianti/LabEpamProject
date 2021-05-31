@@ -57,6 +57,7 @@ class NetworkRoomPokemonRepository(
                         Timber.d(e)
                         api.fetchPokemonList(limit, offset).results
                             .map { api.fetchPokemonInfo(it.name).asEntity() }
+                            .also { Timber.d("loaded: $it") }
                             .cacheAndReturn()
                     }
                 )

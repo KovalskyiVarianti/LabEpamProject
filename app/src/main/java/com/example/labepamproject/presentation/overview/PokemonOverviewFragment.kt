@@ -7,7 +7,10 @@ import android.view.Menu
 import android.view.MenuInflater
 import android.view.MenuItem
 import android.view.View
+import android.widget.ImageView
+import androidx.core.view.doOnPreDraw
 import androidx.fragment.app.Fragment
+import androidx.navigation.fragment.FragmentNavigatorExtras
 import androidx.navigation.fragment.findNavController
 import androidx.preference.PreferenceManager
 import androidx.recyclerview.widget.GridLayoutManager
@@ -51,6 +54,12 @@ class PokemonOverviewFragment : Fragment(R.layout.fragment_pokemon_overview) {
             provideGenerationAdapter()
         )
         viewModel.fetch()
+        waitForTransition(binding?.generationList)
+    }
+
+    private fun Fragment.waitForTransition(targetView: View?) {
+        postponeEnterTransition()
+        targetView?.doOnPreDraw { startPostponedEnterTransition() }
     }
 
     private fun provideSharedPreferences() = PreferenceManager.getDefaultSharedPreferences(activity)
@@ -71,14 +80,17 @@ class PokemonOverviewFragment : Fragment(R.layout.fragment_pokemon_overview) {
         binding?.let { it.headerOverviewText.text = headerText }
     }
 
-    private fun showPokemonDetails(pokemonItemParams: Pair<String, Int>?) {
+    private fun showPokemonDetails(pokemonItemParams: Triple<ImageView, String, Int>?) {
         pokemonItemParams?.let {
             findNavController().navigate(
                 PokemonOverviewFragmentDirections
                     .actionPokemonOverviewFragmentToPokemonDetailFragment(
-                        pokemonItemParams.first,
-                        pokemonItemParams.second
-                    )
+                        pokemonItemParams.second,
+                        pokemonItemParams.third
+                    ),
+                FragmentNavigatorExtras(
+                    pokemonItemParams.first to pokemonItemParams.second
+                )
             )
             viewModel.onPokemonDetailFragmentNavigated()
         }
@@ -167,7 +179,7 @@ class PokemonOverviewFragment : Fragment(R.layout.fragment_pokemon_overview) {
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         when (item.itemId) {
             R.id.settings -> {
-                this?.let { findNavController().navigate(PokemonOverviewFragmentDirections.actionPokemonOverviewFragmentToSettingsFragment2()) }
+                this?.let { findNavController().navigate(PokemonOverviewFragmentDirections.actionPokemonOverviewFragmentToSettingsFragment()) }
             }
         }
         return true

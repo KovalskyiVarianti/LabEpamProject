@@ -10,6 +10,7 @@ import androidx.annotation.RequiresApi
 import androidx.core.app.ShareCompat
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.navArgs
+import androidx.transition.TransitionInflater
 import com.example.labepamproject.R
 import com.example.labepamproject.databinding.FragmentPokemonDetailBinding
 import com.example.labepamproject.domain.PokemonEntity
@@ -27,6 +28,15 @@ class PokemonDetailFragment : Fragment(R.layout.fragment_pokemon_detail) {
     private var binding: FragmentPokemonDetailBinding? = null
     private val navArgs by navArgs<PokemonDetailFragmentArgs>()
     private val viewModel: PokemonDetailViewModel by viewModel { parametersOf(navArgs.pokemonName) }
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            Timber.d("Transition")
+            sharedElementEnterTransition =
+                TransitionInflater.from(context).inflateTransition(android.R.transition.move)
+        }
+    }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -49,7 +59,10 @@ class PokemonDetailFragment : Fragment(R.layout.fragment_pokemon_detail) {
         setFragmentTitle(
             activity,
             navArgs.pokemonName.fromCapitalLetter()
-        ).also { Timber.d("Set name") }
+        )
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.LOLLIPOP) {
+            binding?.pokemonDetailImage?.transitionName = navArgs.pokemonName
+        }
     }
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
@@ -59,12 +72,14 @@ class PokemonDetailFragment : Fragment(R.layout.fragment_pokemon_detail) {
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        startActivity(
-            viewModel.buildShareIntent(
-                ShareCompat.IntentBuilder(requireContext()),
-                getString(R.string.pokemon_share_message, navArgs.pokemonName)
+        if (item.itemId == R.id.pokemon_share) {
+            startActivity(
+                viewModel.buildShareIntent(
+                    ShareCompat.IntentBuilder(requireContext()),
+                    getString(R.string.pokemon_share_message, navArgs.pokemonName)
+                )
             )
-        )
+        }
         return super.onOptionsItemSelected(item)
     }
 
@@ -84,7 +99,7 @@ class PokemonDetailFragment : Fragment(R.layout.fragment_pokemon_detail) {
         setFragmentTitle(activity, pokemonEntity.name.fromCapitalLetter())
         binding?.let { pokemonDetailBinding ->
             pokemonDetailBinding.apply {
-                pokemonDetailImage.setBackgroundColor(navArgs.itemColor)
+                pokemonCardview.setCardBackgroundColor(navArgs.itemColor)
                 pokemonDetailImage.loadImage(pokemonEntity.prevImgUrl)
                 experienceBar.labelText = "${pokemonEntity.experience} exp."
                 experienceBar.progress = pokemonEntity.experience

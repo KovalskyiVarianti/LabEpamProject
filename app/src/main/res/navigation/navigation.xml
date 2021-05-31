@@ -12,10 +12,15 @@
         tools:layout="@layout/fragment_pokemon_overview">
         <action
             android:id="@+id/action_pokemonOverviewFragment_to_pokemonDetailFragment"
-            app:destination="@id/pokemon_detail_fragment" />
+            app:destination="@id/pokemon_detail_fragment"
+            app:popEnterAnim="@anim/fade_out" />
         <action
-            android:id="@+id/action_pokemon_overview_fragment_to_settings_fragment2"
-            app:destination="@id/preferences" />
+            android:id="@+id/action_pokemon_overview_fragment_to_settings_fragment"
+            app:destination="@id/preferences"
+            app:enterAnim="@anim/slide_in_right"
+            app:exitAnim="@anim/slide_out_right"
+            app:popEnterAnim="@anim/fade_in"
+            app:popExitAnim="@anim/fade_out" />
     </fragment>
     <fragment
         android:id="@+id/pokemon_detail_fragment"
