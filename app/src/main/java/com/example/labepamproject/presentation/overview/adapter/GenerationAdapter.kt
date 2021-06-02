@@ -35,14 +35,12 @@ class GenerationAdapter(generationClickListener: (Int, String) -> Unit) :
                 binding.generationOverviewName.text = item.text
                 Timber.d("Generation $item binded")
             }
-
-
         }
 
     private fun setFlags(item: Item.GenerationItem) {
         item.isPressed = true
         items.forEach {
-            if (it != item && it.isPressed) {
+            if (it != item) {
                 it.isPressed = false
             }
         }

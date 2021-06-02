@@ -1,0 +1,9 @@
+<transitionSet android:transitionOrdering="together"
+    android:duration="200"
+    xmlns:android="http://schemas.android.com/apk/res/android">
+    <changeImageTransform />
+    <changeTransform />
+    <changeBounds />
+    <changeClipBounds />
+    <changeScroll />
+</transitionSet>

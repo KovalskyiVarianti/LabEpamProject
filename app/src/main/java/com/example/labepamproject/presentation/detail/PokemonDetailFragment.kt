@@ -34,7 +34,8 @@ class PokemonDetailFragment : Fragment(R.layout.fragment_pokemon_detail) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             Timber.d("Transition")
             sharedElementEnterTransition =
-                TransitionInflater.from(context).inflateTransition(android.R.transition.move)
+                TransitionInflater.from(context)
+                    .inflateTransition(R.transition.item_scope_transition)
         }
     }
 
@@ -60,7 +61,7 @@ class PokemonDetailFragment : Fragment(R.layout.fragment_pokemon_detail) {
             activity,
             navArgs.pokemonName.fromCapitalLetter()
         )
-        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.LOLLIPOP) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             binding?.pokemonDetailImage?.transitionName = navArgs.pokemonName
         }
     }

@@ -213,8 +213,6 @@ class PokemonOverviewFragment : Fragment(R.layout.fragment_pokemon_overview) {
                 .asGif()
                 .load(R.drawable.loading_anim)
                 .into(it.loadingStateImage)
-            it.loadingStateImage.visibility = View.VISIBLE
-            it.generationList.isFocusable = false
         }
     }
 

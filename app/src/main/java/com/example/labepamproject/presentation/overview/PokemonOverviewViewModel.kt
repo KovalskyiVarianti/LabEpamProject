@@ -64,13 +64,21 @@ class PokemonOverviewViewModel(
 
     }
 
-    fun loadNextPokemons(offset: Int) = viewModelScope.launch {
-        currentOffset = offset
-        Timber.d("current offset = $currentOffset")
-        loadPokemons(offset = currentOffset)
+    fun loadNextPokemons(offset: Int) {
+        if (_state.value == PokemonOverviewViewState.LoadingState) {
+            return
+        }
+        viewModelScope.launch {
+            currentOffset = offset
+            Timber.d("current offset = $currentOffset")
+            loadPokemons(offset = currentOffset)
+        }
     }
 
     fun onGenerationItemClicked(id: Int, generationName: String) {
+        if (_state.value == PokemonOverviewViewState.LoadingState) {
+            return
+        }
         checkFilters(id)
         currentOffset = 0
         pokemonData = emptyList()

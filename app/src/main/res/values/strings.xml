@@ -12,4 +12,5 @@
     <string name="pokemon_weight_text">Weight: %1$d</string>
     <string name="pokemon_abilities_text">Abilities: %1$s</string>
     <string name="pokemon_types_text">Types: %1$s</string>
+    <string name="stats">Stats</string>
 </resources>

@@ -12,8 +12,7 @@
         tools:layout="@layout/fragment_pokemon_overview">
         <action
             android:id="@+id/action_pokemonOverviewFragment_to_pokemonDetailFragment"
-            app:destination="@id/pokemon_detail_fragment"
-            app:popEnterAnim="@anim/fade_out" />
+            app:destination="@id/pokemon_detail_fragment" />
         <action
             android:id="@+id/action_pokemon_overview_fragment_to_settings_fragment"
             app:destination="@id/preferences"
