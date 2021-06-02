@@ -2,7 +2,7 @@ package com.example.labepamproject.di
 
 import android.content.Context
 import androidx.room.Room
-import com.example.labepamproject.data.NetworkPokemonRepository
+
 import com.example.labepamproject.data.NetworkRoomPokemonRepository
 import com.example.labepamproject.data.database.PokemonDatabase
 import com.example.labepamproject.data.network.POKE_API_URL
@@ -18,7 +18,7 @@ import retrofit2.converter.moshi.MoshiConverterFactory
 val appModule = module {
     single<PokedexApiService> { createPokedexApiService }
     single<PokemonDatabase> { getDatabase(androidApplication()) }
-    single<NetworkPokemonRepository> { NetworkPokemonRepository(get<PokedexApiService>()) }
+    //single<NetworkPokemonRepository> { NetworkPokemonRepository(get<PokedexApiService>()) }
     single<NetworkRoomPokemonRepository> {
         NetworkRoomPokemonRepository(
             get<PokedexApiService>(),

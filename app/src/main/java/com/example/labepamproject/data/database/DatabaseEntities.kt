@@ -4,13 +4,14 @@ import androidx.room.Entity
 import androidx.room.PrimaryKey
 import androidx.room.TypeConverter
 import androidx.room.TypeConverters
+import com.example.labepamproject.domain.GenerationEntity
 import com.example.labepamproject.domain.PokemonEntity
 import com.example.labepamproject.presentation.generateUrlFromId
 
 
 @Entity
-@TypeConverters(PokemonTypeConverter::class)
-data class PokemonDatabaseEntity(
+@TypeConverters(EntityTypeConverter::class)
+data class PokemonDetailDatabaseEntity(
     @PrimaryKey
     val id: Int,
     val name: String,
@@ -22,40 +23,30 @@ data class PokemonDatabaseEntity(
     val types: List<String>,
 )
 
-fun PokemonDatabaseEntity.asEntity() =
-    PokemonEntity(
-        id = id,
-        name = name,
-        prevImgUrl = generateUrlFromId(id),
-        experience = experience,
-        height = height,
-        weight = weight,
-        abilities = abilities,
-        stats = stats,
-        types = types,
-    )
+@Entity
+data class PokemonDatabaseEntity(
+    @PrimaryKey
+    val name: String
+)
 
-fun PokemonEntity.asDatabaseEntity() =
-    PokemonDatabaseEntity(
-        id = id,
-        name = name,
-        experience = experience,
-        height = height,
-        weight = weight,
-        abilities = abilities,
-        stats = stats,
-        types = types,
-    )
+@Entity
+@TypeConverters(EntityTypeConverter::class)
+data class GenerationDatabaseEntity(
+    @PrimaryKey
+    val id: Int,
+    val name: String,
+    val pokemons: List<String>
+)
 
-object PokemonTypeConverter {
+object EntityTypeConverter {
 
     @TypeConverter
-    fun fromAbilitiesOrTypes(abilities: List<String>): String {
+    fun fromStringList(abilities: List<String>): String {
         return abilities.joinToString()
     }
 
     @TypeConverter
-    fun toAbilitiesOrTypes(data: String): List<String> {
+    fun toStringList(data: String): List<String> {
         return data.split(", ")
     }
 
@@ -72,3 +63,38 @@ object PokemonTypeConverter {
         }
     }
 }
+
+fun PokemonDetailDatabaseEntity.asEntity() =
+    PokemonEntity(
+        id = id,
+        name = name,
+        prevImgUrl = generateUrlFromId(id),
+        experience = experience,
+        height = height,
+        weight = weight,
+        abilities = abilities,
+        stats = stats,
+        types = types,
+    )
+
+fun PokemonEntity.asDatabaseEntity() =
+    PokemonDetailDatabaseEntity(
+        id = id,
+        name = name,
+        experience = experience,
+        height = height,
+        weight = weight,
+        abilities = abilities,
+        stats = stats,
+        types = types,
+    )
+
+fun GenerationDatabaseEntity.asEntity() =
+    GenerationEntity(
+        id = id, name = name, pokemons = pokemons
+    )
+
+fun GenerationEntity.asDatabaseEntity() =
+    GenerationDatabaseEntity(
+        id = id, name = name, pokemons = pokemons
+    )

@@ -6,13 +6,32 @@ import androidx.room.OnConflictStrategy
 import androidx.room.Query
 
 @Dao
-interface PokemonDao {
-    @Query("select * from pokemondatabaseentity order by id")
-    fun getPokemons(): List<PokemonDatabaseEntity>
-
+interface PokemonDetailDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    fun insertAll(vararg pokemons: PokemonDatabaseEntity)
+    fun insertAll(vararg pokemonDetails: PokemonDetailDatabaseEntity)
 
-    @Query("select * from pokemondatabaseentity where name like :name limit 1")
-    fun getPokemonByName(name: String): PokemonDatabaseEntity
+    @Query("select * from pokemondetaildatabaseentity where name like :name limit 1")
+    fun getPokemonByName(name: String): PokemonDetailDatabaseEntity
 }
+
+@Dao
+interface PokemonDao {
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    fun insertAll(vararg pokemonNames: PokemonDatabaseEntity)
+
+    @Query("select * from pokemondatabaseentity")
+    fun getPokemons(): List<PokemonDatabaseEntity>
+}
+
+@Dao
+interface GenerationDao {
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    fun insertAll(vararg generations: GenerationDatabaseEntity)
+
+    @Query("select * from generationdatabaseentity where id = :id limit 1")
+    fun getGenerationById(id: Int): GenerationDatabaseEntity
+
+    @Query("select * from generationdatabaseentity order by id")
+    fun getGenerations(): List<GenerationDatabaseEntity>
+}
+

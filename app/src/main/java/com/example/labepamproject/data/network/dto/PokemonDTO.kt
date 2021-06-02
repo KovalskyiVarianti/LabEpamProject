@@ -1,6 +1,6 @@
 package com.example.labepamproject.data.network.dto
 
-import com.example.labepamproject.data.database.PokemonDatabaseEntity
+import com.example.labepamproject.data.database.PokemonDetailDatabaseEntity
 import com.example.labepamproject.domain.PokemonEntity
 import com.example.labepamproject.presentation.generateUrlFromId
 import com.squareup.moshi.Json
@@ -40,7 +40,7 @@ fun PokemonDetailedResponse.asEntity() =
     )
 
 fun PokemonDetailedResponse.asDatabaseEntity() =
-    PokemonDatabaseEntity(
+    PokemonDetailDatabaseEntity(
         id = id,
         name = name,
         experience = experience,

@@ -10,8 +10,9 @@
     <string name="pokemon_share_message">Look at this nice pokemon:\nhttps://pokemon.fandom.com/wiki/%1$s</string>
     <string name="pokemon_height_text">Height: %1$d</string>
     <string name="pokemon_weight_text">Weight: %1$d</string>
-    <string name="pokemon_abilities_text">Abilities: %1$s</string>
-    <string name="pokemon_types_text">Types: %1$s</string>
+    <string name="pokemon_abilities_text">Abilities:\n%1$s</string>
+    <string name="pokemon_types_text">Types:\n%1$s</string>
     <string name="stats">Stats</string>
     <string name="more_button_text">More</string>
+    <string name="characteristics">Characteristics</string>
 </resources>

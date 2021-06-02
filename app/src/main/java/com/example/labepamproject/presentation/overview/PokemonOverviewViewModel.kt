@@ -75,16 +75,15 @@ class PokemonOverviewViewModel(
         }
     }
 
-    fun onGenerationItemClicked(id: Int, generationName: String) {
-        if (_state.value == PokemonOverviewViewState.LoadingState) {
-            return
+    fun onGenerationItemClicked(id: Int, generationName: String) =
+        viewModelScope.launch {
+            checkFilters(id)
+            currentOffset = 0
+            pokemonData = emptyList()
+            loadPokemons()
+            _headerText.value = generationName
         }
-        checkFilters(id)
-        currentOffset = 0
-        pokemonData = emptyList()
-        viewModelScope.launch { loadPokemons() }
-        _headerText.value = generationName
-    }
+
 
     private fun checkFilters(id: Int) {
         currentFilter = if (id in 1..8) {
