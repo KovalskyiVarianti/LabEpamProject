@@ -44,7 +44,7 @@ class PokemonOverviewFragment : Fragment(R.layout.fragment_pokemon_overview) {
         setHasOptionsMenu(true)
         binding = FragmentPokemonOverviewBinding.bind(view)
         provideViewModel()
-        sharedPreferences = provideSharedPreferences()
+        provideSharedPreferences()
         provideSpanCount()
         providePokemonRecyclerView(
             getSpanCountByOrientation(resources.configuration.orientation),
@@ -53,7 +53,6 @@ class PokemonOverviewFragment : Fragment(R.layout.fragment_pokemon_overview) {
         provideGenerationRecyclerView(
             provideGenerationAdapter()
         )
-        viewModel.fetch()
         waitForTransition(binding?.generationList)
     }
 
@@ -62,7 +61,9 @@ class PokemonOverviewFragment : Fragment(R.layout.fragment_pokemon_overview) {
         targetView?.doOnPreDraw { startPostponedEnterTransition() }
     }
 
-    private fun provideSharedPreferences() = PreferenceManager.getDefaultSharedPreferences(activity)
+    private fun provideSharedPreferences() {
+        sharedPreferences = PreferenceManager.getDefaultSharedPreferences(activity)
+    }
 
     private fun provideSpanCount() {
         spanCount = sharedPreferences?.getString(getString(R.string.sp_key_item_size), "3")?.toInt()
@@ -73,6 +74,7 @@ class PokemonOverviewFragment : Fragment(R.layout.fragment_pokemon_overview) {
             navigateToPokemonDetailFragment().observe(viewLifecycleOwner, ::showPokemonDetails)
             getState().observe(viewLifecycleOwner, ::showState)
             getHeaderText().observe(viewLifecycleOwner, ::showHeader)
+            fetch()
         }
     }
 
@@ -85,8 +87,7 @@ class PokemonOverviewFragment : Fragment(R.layout.fragment_pokemon_overview) {
             findNavController().navigate(
                 PokemonOverviewFragmentDirections
                     .actionPokemonOverviewFragmentToPokemonDetailFragment(
-                        pokemonItemParams.second,
-                        pokemonItemParams.third
+                        pokemonItemParams.second, pokemonItemParams.third
                     ),
                 FragmentNavigatorExtras(
                     pokemonItemParams.first to pokemonItemParams.second
@@ -119,7 +120,7 @@ class PokemonOverviewFragment : Fragment(R.layout.fragment_pokemon_overview) {
         pokemonAdapter = pokemonItemAdapter
         binding?.let {
             it.pokemonList.apply {
-                layoutManager = provideGridLayoutManager(spanCount)
+                layoutManager = GridLayoutManager(activity, spanCount)
                 adapter = pokemonAdapter
                 provideScrollListener()
             }
@@ -163,8 +164,6 @@ class PokemonOverviewFragment : Fragment(R.layout.fragment_pokemon_overview) {
         viewModel::onGenerationItemClicked,
     )
 
-    private fun provideGridLayoutManager(spanCount: Int): GridLayoutManager =
-        GridLayoutManager(activity, spanCount)
 
     private fun getSpanCountByOrientation(orientation: Int) = when (orientation) {
         Configuration.ORIENTATION_PORTRAIT -> spanCount ?: SPAN_COUNT_DEFAULT_VALUE
@@ -179,7 +178,7 @@ class PokemonOverviewFragment : Fragment(R.layout.fragment_pokemon_overview) {
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         when (item.itemId) {
             R.id.settings -> {
-                this?.let { findNavController().navigate(PokemonOverviewFragmentDirections.actionPokemonOverviewFragmentToSettingsFragment()) }
+                findNavController().navigate(R.id.action_pokemon_overview_fragment_to_settings_fragment)
             }
         }
         return true

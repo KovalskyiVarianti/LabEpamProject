@@ -19,7 +19,25 @@ class PokemonDetailViewModel(
     private val _state = MutableLiveData<PokemonDetailViewState>()
     fun getState(): LiveData<PokemonDetailViewState> = _state
 
+    private val _navigateToPokemonWikiFragment =
+        MutableLiveData<String?>()
+
+    fun navigateToPokemonWikiFragment(): MutableLiveData<String?> =
+        _navigateToPokemonWikiFragment
+
+    fun onMoreButtonClicked(pokemonName: String) {
+        _navigateToPokemonWikiFragment.value = pokemonName
+    }
+
+    fun onPokemonWikiFragmentNavigated() {
+        _navigateToPokemonWikiFragment.value = null
+    }
+
     fun fetch() {
+        loadPokemon()
+    }
+
+    private fun loadPokemon() {
         onLoadState()
         viewModelScope.launch {
             when (val result = repository.getPokemonByName(pokemonName)) {

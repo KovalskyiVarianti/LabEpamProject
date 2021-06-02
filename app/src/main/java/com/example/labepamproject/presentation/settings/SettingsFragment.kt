@@ -9,6 +9,5 @@ class SettingsFragment : PreferenceFragmentCompat() {
     override fun onCreatePreferences(savedInstanceState: Bundle?, rootKey: String?) {
         addPreferencesFromResource(R.xml.preferences)
         setFragmentTitle(activity, getString(R.string.settings))
-
     }
 }

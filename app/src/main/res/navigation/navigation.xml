@@ -8,7 +8,6 @@
     <fragment
         android:id="@+id/pokemon_overview_fragment"
         android:name="com.example.labepamproject.presentation.overview.PokemonOverviewFragment"
-        android:label="@string/app_name"
         tools:layout="@layout/fragment_pokemon_overview">
         <action
             android:id="@+id/action_pokemonOverviewFragment_to_pokemonDetailFragment"
@@ -24,20 +23,26 @@
     <fragment
         android:id="@+id/pokemon_detail_fragment"
         android:name="com.example.labepamproject.presentation.detail.PokemonDetailFragment"
-        android:label="fragment_pokemon_detail"
         tools:layout="@layout/fragment_pokemon_detail">
-        <action
-            android:id="@+id/action_pokemonDetailFragment_to_pokemonOverviewFragment"
-            app:destination="@id/pokemon_overview_fragment" />
         <argument
             android:name="pokemonName"
             app:argType="string" />
         <argument
             android:name="itemColor"
             app:argType="integer" />
+        <action
+            android:id="@+id/action_pokemon_detail_fragment_to_pokemonWikiFragment"
+            app:destination="@id/pokemon_wiki_fragment" />
     </fragment>
     <fragment
         android:id="@+id/preferences"
-        android:name="com.example.labepamproject.presentation.settings.SettingsFragment"
-        android:label="fragment_settings" />
+        android:name="com.example.labepamproject.presentation.settings.SettingsFragment" />
+    <fragment
+        android:id="@+id/pokemon_wiki_fragment"
+        android:name="com.example.labepamproject.presentation.wiki.PokemonWikiFragment"
+        tools:layout="@layout/fragment_pokemon_wiki">
+        <argument
+            android:name="pokemonName"
+            app:argType="string" />
+    </fragment>
 </navigation>

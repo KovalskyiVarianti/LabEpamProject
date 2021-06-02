@@ -9,6 +9,7 @@ import android.view.View
 import androidx.annotation.RequiresApi
 import androidx.core.app.ShareCompat
 import androidx.fragment.app.Fragment
+import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import androidx.transition.TransitionInflater
 import com.example.labepamproject.R
@@ -31,39 +32,19 @@ class PokemonDetailFragment : Fragment(R.layout.fragment_pokemon_detail) {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            Timber.d("Transition")
-            sharedElementEnterTransition =
-                TransitionInflater.from(context)
-                    .inflateTransition(R.transition.item_scope_transition)
-        }
+        setFragmentTitle(
+            activity,
+            navArgs.pokemonName.fromCapitalLetter()
+        )
+        provideSharedElementEnterTransition()
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         binding = FragmentPokemonDetailBinding.bind(view)
-        viewModel.getState().observe(viewLifecycleOwner) { state ->
-            when (state) {
-                is PokemonDetailViewState.LoadingState -> {
-                    showLoadingAnimation()
-                }
-                is PokemonDetailViewState.ResultState -> {
-                    showContent(state.pokemonEntity)
-                }
-                is PokemonDetailViewState.ErrorState -> {
-                    showErrorMessage(state.errorMessage)
-                }
-            }
-        }
-        viewModel.fetch()
+        setTransitionNameForImage()
+        provideViewModel()
         setHasOptionsMenu(true)
-        setFragmentTitle(
-            activity,
-            navArgs.pokemonName.fromCapitalLetter()
-        )
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            binding?.pokemonDetailImage?.transitionName = navArgs.pokemonName
-        }
     }
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
@@ -82,6 +63,51 @@ class PokemonDetailFragment : Fragment(R.layout.fragment_pokemon_detail) {
             )
         }
         return super.onOptionsItemSelected(item)
+    }
+
+    private fun provideSharedElementEnterTransition() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            Timber.d("Transition")
+            sharedElementEnterTransition =
+                TransitionInflater.from(context)
+                    .inflateTransition(R.transition.item_scope_transition)
+        }
+    }
+
+    private fun setTransitionNameForImage() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            binding?.pokemonDetailImage?.transitionName = navArgs.pokemonName
+        }
+    }
+
+    private fun provideViewModel() {
+        viewModel.apply {
+            navigateToPokemonWikiFragment().observe(viewLifecycleOwner, ::showPokemonWiki)
+            getState().observe(viewLifecycleOwner, ::showState)
+            fetch()
+        }
+    }
+
+    private fun showState(state: PokemonDetailViewState) = when (state) {
+        is PokemonDetailViewState.LoadingState -> {
+            showLoadingAnimation()
+        }
+        is PokemonDetailViewState.ResultState -> {
+            showContent(state.pokemonEntity)
+        }
+        is PokemonDetailViewState.ErrorState -> {
+            showErrorMessage(state.errorMessage)
+        }
+    }
+
+
+    private fun showPokemonWiki(pokemonName: String?) {
+        pokemonName?.let {
+            findNavController().navigate(
+                PokemonDetailFragmentDirections.actionPokemonDetailFragmentToPokemonWikiFragment(it)
+            )
+            viewModel.onPokemonWikiFragmentNavigated()
+        }
     }
 
     private fun showErrorMessage(errorMessage: String) {
@@ -112,6 +138,9 @@ class PokemonDetailFragment : Fragment(R.layout.fragment_pokemon_detail) {
                 pokemonTypes.text = getString(
                     R.string.pokemon_types_text,
                     pokemonEntity.types.joinToString("") { "$it\n" })
+                moreButton.setOnClickListener {
+                    viewModel.onMoreButtonClicked(pokemonEntity.name)
+                }
             }
         }
         pokemonEntity.stats.forEach(::setValues)
