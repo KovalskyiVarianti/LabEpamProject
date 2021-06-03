@@ -130,8 +130,10 @@ class PokemonDetailFragment : Fragment(R.layout.fragment_pokemon_detail) {
                 pokemonDetailImage.loadImage(pokemonEntity.prevImgUrl)
                 experienceBar.labelText = "${pokemonEntity.experience} exp."
                 experienceBar.progress = pokemonEntity.experience
-                pokemonHeight.text = getString(R.string.pokemon_height_text, pokemonEntity.height)
-                pokemonWeight.text = getString(R.string.pokemon_weight_text, pokemonEntity.weight)
+                pokemonHeight.text =
+                    getString(R.string.pokemon_height_text, (pokemonEntity.height.toDouble() / 10))
+                pokemonWeight.text =
+                    getString(R.string.pokemon_weight_text, (pokemonEntity.weight.toDouble() / 10))
                 pokemonAbilities.text = getString(
                     R.string.pokemon_abilities_text,
                     pokemonEntity.abilities.joinToString("") { "$it\n" })

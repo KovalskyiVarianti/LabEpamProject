@@ -54,30 +54,27 @@
             android:layout_width="0dp"
             android:layout_height="0dp"
             android:layout_margin="10dp"
-            app:cardBackgroundColor="@color/items_background_color"
+            app:cardBackgroundColor="#FFC797"
             app:cardCornerRadius="20dp"
             app:layout_constraintDimensionRatio="1"
-
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toEndOf="@id/pokemon_item_cardview"
             app:layout_constraintTop_toTopOf="parent">
 
             <androidx.constraintlayout.widget.ConstraintLayout
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:layout_margin="10dp"
-                android:background="@color/items_background_color">
+                android:layout_height="match_parent">
 
                 <TextView
                     android:id="@+id/stats_label"
-                    android:layout_width="wrap_content"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_margin="@dimen/stat_bar_margin"
-                    android:text="Stats"
+                    android:background="#F4AC6E"
+                    android:gravity="center_horizontal"
+                    android:text="@string/stats"
                     android:textSize="30sp"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
-
                     app:layout_constraintTop_toTopOf="parent" />
 
                 <ImageView
@@ -224,51 +221,56 @@
             android:layout_margin="10dp"
             app:cardBackgroundColor="@color/items_background_color"
             app:cardCornerRadius="20dp"
-            app:layout_constraintDimensionRatio="1"
+            app:layout_constraintBottom_toTopOf="@id/more_button"
+            app:layout_constraintDimensionRatio="2"
             app:layout_constraintEnd_toStartOf="@id/other_cardview"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/pokemon_item_cardview"
-            app:layout_constraintBottom_toTopOf="@id/more_button">
+            app:layout_constraintTop_toBottomOf="@id/pokemon_item_cardview">
 
             <androidx.constraintlayout.widget.ConstraintLayout
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:layout_margin="10dp">
+                android:layout_height="match_parent">
 
                 <TextView
                     android:id="@+id/characteristics_label"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
+                    android:layout_width="0dp"
+                    android:layout_height="0dp"
+                    app:layout_constraintDimensionRatio="6"
                     android:layout_gravity="center_horizontal"
                     android:text="@string/characteristics"
                     android:textSize="30sp"
+                    android:gravity="center_horizontal"
+                    android:background="#ABE87E"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent" />
 
                 <TextView
                     android:id="@+id/pokemon_height"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="start"
-                    android:layout_margin="7dp"
-                    android:textSize="30sp"
-                    app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintEnd_toStartOf="@id/pokemon_weight"
+                    android:layout_width="0dp"
+                    android:layout_height="0dp"
+                    app:layout_constraintDimensionRatio="6"
+                    android:textSize="20sp"
+                    android:background="#CFF493"
+                    android:gravity="center"
+                    app:layout_constraintBottom_toTopOf="@id/pokemon_weight"
+                    app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@id/characteristics_label" />
+                    app:layout_constraintTop_toBottomOf="@id/characteristics_label"
+                    tools:text="15 M" />
 
                 <TextView
                     android:id="@+id/pokemon_weight"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="end"
-                    android:layout_margin="7dp"
-                    android:textSize="30sp"
+                    android:layout_width="0dp"
+                    android:layout_height="0dp"
+                    app:layout_constraintDimensionRatio="6"
+                    android:textSize="20sp"
+                    android:gravity="center"
+                    android:background="#CFF493"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintStart_toEndOf="@id/pokemon_height"
-                    app:layout_constraintTop_toBottomOf="@id/characteristics_label" />
+                    app:layout_constraintStart_toStartOf="parent"
+                    tools:text="15 KG" />
             </androidx.constraintlayout.widget.ConstraintLayout>
         </androidx.cardview.widget.CardView>
 
@@ -279,38 +281,66 @@
             android:layout_margin="10dp"
             app:cardBackgroundColor="@color/items_background_color"
             app:cardCornerRadius="20dp"
-            app:layout_constraintDimensionRatio="1"
+            app:layout_constraintBottom_toTopOf="@id/more_button"
+            app:layout_constraintDimensionRatio="2"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toEndOf="@id/characteristics_cardview"
-            app:layout_constraintTop_toBottomOf="@id/stats_cardview"
-            app:layout_constraintBottom_toTopOf="@id/more_button">
+            app:layout_constraintTop_toBottomOf="@id/stats_cardview">
 
             <androidx.constraintlayout.widget.ConstraintLayout
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:layout_margin="10dp">
+                android:layout_height="match_parent">
+
+                <TextView
+                    android:id="@+id/abilities_label"
+                    android:layout_width="0dp"
+                    android:layout_height="0dp"
+                    android:background="#8A8BE8"
+                    android:gravity="center_horizontal"
+                    android:text="@string/abilities"
+                    android:textSize="30sp"
+                    app:layout_constraintDimensionRatio="4"
+                    app:layout_constraintEnd_toStartOf="@id/types_label"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
 
                 <TextView
                     android:id="@+id/pokemon_abilities"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_margin="7dp"
+                    android:layout_width="0dp"
+                    android:layout_height="0dp"
+                    android:background="#B0B1ED"
+                    android:gravity="center_horizontal"
                     android:textSize="20sp"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintDimensionRatio="1.33"
                     app:layout_constraintEnd_toStartOf="@id/pokemon_types"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toTopOf="parent"
-                    tools:text="Abilities" />
+                    app:layout_constraintStart_toStartOf="parent" />
+
+                <TextView
+                    android:id="@+id/types_label"
+                    android:layout_width="0dp"
+                    android:layout_height="0dp"
+                    android:background="#D87C7C"
+                    android:gravity="center_horizontal"
+                    android:text="@string/types"
+                    android:textSize="30sp"
+                    app:layout_constraintDimensionRatio="4"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toEndOf="@id/abilities_label"
+                    app:layout_constraintTop_toTopOf="parent" />
 
                 <TextView
                     android:id="@+id/pokemon_types"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_margin="7dp"
+                    android:layout_width="0dp"
+                    android:layout_height="0dp"
+                    android:background="#DCA0A0"
+                    android:gravity="center_horizontal"
                     android:textSize="20sp"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintDimensionRatio="1.33"
                     app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintStart_toEndOf="@id/pokemon_abilities"
-                    app:layout_constraintTop_toTopOf="parent"
-                    tools:text="Types" />
+                    app:layout_constraintStart_toEndOf="@id/pokemon_abilities" />
+
             </androidx.constraintlayout.widget.ConstraintLayout>
         </androidx.cardview.widget.CardView>
 
