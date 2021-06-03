@@ -1,6 +1,6 @@
 package com.example.labepamproject.data.network.dto
 
-import com.example.labepamproject.domain.GenerationEntity
+import com.example.labepamproject.domain.entity.GenerationEntity
 import com.example.labepamproject.presentation.getGenerationId
 import com.squareup.moshi.Json
 import java.util.*

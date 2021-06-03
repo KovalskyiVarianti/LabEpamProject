@@ -2,10 +2,11 @@ package com.example.labepamproject.di
 
 import android.content.Context
 import androidx.room.Room
-import com.example.labepamproject.data.NetworkRoomPokemonRepository
 import com.example.labepamproject.data.database.PokemonDatabase
 import com.example.labepamproject.data.network.POKE_API_URL
 import com.example.labepamproject.data.network.PokedexApiService
+import com.example.labepamproject.data.repository.NetworkRoomPokemonDetailRepository
+import com.example.labepamproject.data.repository.NetworkRoomPokemonOverviewRepository
 import com.example.labepamproject.presentation.detail.PokemonDetailViewModel
 import com.example.labepamproject.presentation.overview.PokemonOverviewViewModel
 import org.koin.android.ext.koin.androidApplication
@@ -17,20 +18,26 @@ import retrofit2.converter.moshi.MoshiConverterFactory
 val appModule = module {
     single<PokedexApiService> { createPokedexApiService }
     single<PokemonDatabase> { getDatabase(androidApplication()) }
-   // single<NetworkPokemonRepository> { NetworkPokemonRepository(get<PokedexApiService>()) }
-    single<NetworkRoomPokemonRepository> {
-        NetworkRoomPokemonRepository(
+    // single<NetworkPokemonRepository> { NetworkPokemonRepository(get<PokedexApiService>()) }
+    single<NetworkRoomPokemonOverviewRepository> {
+        NetworkRoomPokemonOverviewRepository(
+            get<PokedexApiService>(),
+            get<PokemonDatabase>()
+        )
+    }
+    single<NetworkRoomPokemonDetailRepository> {
+        NetworkRoomPokemonDetailRepository(
             get<PokedexApiService>(),
             get<PokemonDatabase>()
         )
     }
 
     // viewModel<PokemonOverviewViewModel> { PokemonOverviewViewModel(get<NetworkPokemonRepository>()) }
-    viewModel<PokemonOverviewViewModel> { PokemonOverviewViewModel(get<NetworkRoomPokemonRepository>()) }
+    viewModel<PokemonOverviewViewModel> { PokemonOverviewViewModel(get<NetworkRoomPokemonOverviewRepository>()) }
     viewModel<PokemonDetailViewModel> { (pokemonName: String) ->
         PokemonDetailViewModel(
             pokemonName,
-            get<NetworkRoomPokemonRepository>()
+            get<NetworkRoomPokemonDetailRepository>()
         )
     }
 }

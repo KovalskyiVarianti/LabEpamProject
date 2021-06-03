@@ -15,7 +15,7 @@ import androidx.navigation.fragment.navArgs
 import androidx.transition.TransitionInflater
 import com.example.labepamproject.R
 import com.example.labepamproject.databinding.FragmentPokemonDetailBinding
-import com.example.labepamproject.domain.PokemonEntity
+import com.example.labepamproject.domain.entity.PokemonEntity
 import com.example.labepamproject.presentation.fromCapitalLetter
 import com.example.labepamproject.presentation.loadImage
 import com.example.labepamproject.presentation.overview.adapter.PokemonAdapter

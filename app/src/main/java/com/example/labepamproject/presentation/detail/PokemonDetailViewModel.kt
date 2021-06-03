@@ -6,16 +6,15 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.labepamproject.domain.PokemonEntity
-import com.example.labepamproject.domain.PokemonRepository
 import com.example.labepamproject.domain.Result
-import kotlinx.coroutines.delay
+import com.example.labepamproject.domain.entity.PokemonEntity
+import com.example.labepamproject.domain.repository.PokemonDetailRepository
 import kotlinx.coroutines.launch
 import timber.log.Timber
 
 class PokemonDetailViewModel(
     private val pokemonName: String,
-    private val repository: PokemonRepository
+    private val detailRepository: PokemonDetailRepository
 ) : ViewModel() {
     private val _state = MutableLiveData<PokemonDetailViewState>()
     fun getState(): LiveData<PokemonDetailViewState> = _state
@@ -37,7 +36,6 @@ class PokemonDetailViewModel(
     fun fetch() {
         viewModelScope.launch {
             loadPokemon()
-            delay(1)
             loadChains()
         }
     }
@@ -45,7 +43,7 @@ class PokemonDetailViewModel(
     private fun loadPokemon() {
         onLoadState()
         viewModelScope.launch {
-            when (val result = repository.getPokemonByName(pokemonName)) {
+            when (val result = detailRepository.getPokemonByName(pokemonName)) {
                 is Result.Success -> {
                     Timber.d("${result.data}")
                     onResultState(result.data)
@@ -61,7 +59,7 @@ class PokemonDetailViewModel(
     private fun loadChains() {
         onLoadState()
         viewModelScope.launch {
-            when (val result = repository.getEvolutionChainForPokemon(pokemonName)) {
+            when (val result = detailRepository.getEvolutionChainForPokemon(pokemonName)) {
                 is Result.Success -> {
                     onChainResultState(result.data)
                 }

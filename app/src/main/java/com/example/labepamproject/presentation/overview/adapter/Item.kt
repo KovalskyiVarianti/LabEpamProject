@@ -1,7 +1,7 @@
 package com.example.labepamproject.presentation.overview.adapter
 
-import com.example.labepamproject.domain.GenerationEntity
-import com.example.labepamproject.domain.PokemonEntity
+import com.example.labepamproject.domain.entity.GenerationEntity
+import com.example.labepamproject.domain.entity.PokemonEntity
 
 sealed class Item {
     data class PokemonItem(val name: String, val imgSrc: String) : Item()

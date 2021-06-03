@@ -5,9 +5,9 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.labepamproject.domain.PokemonEntity
-import com.example.labepamproject.domain.PokemonRepository
 import com.example.labepamproject.domain.Result
+import com.example.labepamproject.domain.entity.PokemonEntity
+import com.example.labepamproject.domain.repository.PokemonOverviewRepository
 import com.example.labepamproject.presentation.overview.adapter.Item
 import com.example.labepamproject.presentation.overview.adapter.asItem
 import com.example.labepamproject.presentation.resolveError
@@ -16,7 +16,7 @@ import kotlinx.coroutines.launch
 import timber.log.Timber
 
 class PokemonOverviewViewModel(
-    private val repository: PokemonRepository
+    private val overviewRepository: PokemonOverviewRepository
 ) :
     ViewModel() {
 
@@ -93,7 +93,7 @@ class PokemonOverviewViewModel(
 
     private suspend fun loadGenerations() {
         onLoadState()
-        when (val result = repository.getGenerations()) {
+        when (val result = overviewRepository.getGenerations()) {
             is Result.Success -> {
                 val generationItems = result.data.map { it.asItem() }
                     .provideGenerationDefaultItem(DEFAULT_HEADER_TEXT)
@@ -124,8 +124,8 @@ class PokemonOverviewViewModel(
     }
 
     private suspend fun loadPokemonByFilter(limit: Int, offset: Int) = when (currentFilter) {
-        is PokemonFilter.AllPokemonFilter -> repository.getPokemons(limit, offset)
-        is PokemonFilter.GenerationPokemonFilter -> repository.getPokemonsByGeneration(
+        is PokemonFilter.AllPokemonFilter -> overviewRepository.getPokemons(limit, offset)
+        is PokemonFilter.GenerationPokemonFilter -> overviewRepository.getPokemonsByGeneration(
             (currentFilter as PokemonFilter.GenerationPokemonFilter).id,
             limit,
             offset

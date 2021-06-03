@@ -1,6 +1,10 @@
-package com.example.labepamproject.domain
+package com.example.labepamproject.domain.repository
 
-interface PokemonRepository {
+import com.example.labepamproject.domain.Result
+import com.example.labepamproject.domain.entity.GenerationEntity
+import com.example.labepamproject.domain.entity.PokemonEntity
+
+interface PokemonOverviewRepository {
     suspend fun getPokemons(limit: Int, offset: Int): Result<List<PokemonEntity>>
     suspend fun getPokemonsByGeneration(
         generationId: Int,
@@ -8,7 +12,7 @@ interface PokemonRepository {
         offset: Int
     ): Result<List<PokemonEntity>>
 
-    suspend fun getPokemonByName(name: String): Result<PokemonEntity>
+
     suspend fun getGenerations(): Result<List<GenerationEntity>>
-    suspend fun getEvolutionChainForPokemon(name: String): Result<List<PokemonEntity>>
+
 }

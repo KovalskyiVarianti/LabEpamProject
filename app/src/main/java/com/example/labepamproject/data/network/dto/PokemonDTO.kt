@@ -1,7 +1,7 @@
 package com.example.labepamproject.data.network.dto
 
 import com.example.labepamproject.data.database.PokemonDetailDatabaseEntity
-import com.example.labepamproject.domain.PokemonEntity
+import com.example.labepamproject.domain.entity.PokemonEntity
 import com.example.labepamproject.presentation.generateUrlFromId
 import com.squareup.moshi.Json
 

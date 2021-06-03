@@ -1,4 +1,4 @@
-package com.example.labepamproject.domain
+package com.example.labepamproject.domain.entity
 
 
 data class PokemonEntity(

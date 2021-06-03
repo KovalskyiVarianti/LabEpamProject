@@ -4,8 +4,8 @@ import androidx.room.Entity
 import androidx.room.PrimaryKey
 import androidx.room.TypeConverter
 import androidx.room.TypeConverters
-import com.example.labepamproject.domain.GenerationEntity
-import com.example.labepamproject.domain.PokemonEntity
+import com.example.labepamproject.domain.entity.GenerationEntity
+import com.example.labepamproject.domain.entity.PokemonEntity
 import com.example.labepamproject.presentation.generateUrlFromId
 
 

@@ -1,6 +1,6 @@
 package com.example.labepamproject.presentation.detail
 
-import com.example.labepamproject.domain.PokemonEntity
+import com.example.labepamproject.domain.entity.PokemonEntity
 
 sealed class PokemonDetailViewState {
     object LoadingState : PokemonDetailViewState()

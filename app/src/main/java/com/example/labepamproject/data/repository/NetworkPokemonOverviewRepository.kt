@@ -1,26 +1,18 @@
-package com.example.labepamproject.data
+package com.example.labepamproject.data.repository
 
 import com.example.labepamproject.data.network.PokedexApiService
 import com.example.labepamproject.data.network.dto.PokemonPartialResponse
 import com.example.labepamproject.data.network.dto.asEntity
-import com.example.labepamproject.domain.GenerationEntity
-import com.example.labepamproject.domain.PokemonEntity
-import com.example.labepamproject.domain.PokemonRepository
 import com.example.labepamproject.domain.Result
+import com.example.labepamproject.domain.entity.GenerationEntity
+import com.example.labepamproject.domain.entity.PokemonEntity
+import com.example.labepamproject.domain.repository.PokemonOverviewRepository
 import com.example.labepamproject.presentation.getGenerationId
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 
-class NetworkPokemonRepository(private val api: PokedexApiService) : PokemonRepository {
-
-    override suspend fun getPokemonByName(name: String): Result<PokemonEntity> =
-        withContext(Dispatchers.IO) {
-            try {
-                Result.Success(api.fetchPokemonInfo(name).asEntity())
-            } catch (e: Exception) {
-                Result.Error(e)
-            }
-        }
+class NetworkPokemonOverviewRepository(private val api: PokedexApiService) :
+    PokemonOverviewRepository {
 
     override suspend fun getGenerations(): Result<List<GenerationEntity>> =
         withContext(Dispatchers.IO) {
@@ -32,10 +24,6 @@ class NetworkPokemonRepository(private val api: PokedexApiService) : PokemonRepo
                 Result.Error(e)
             }
         }
-
-    override suspend fun getEvolutionChainForPokemon(name: String): Result<List<PokemonEntity>> {
-        TODO("Not yet implemented")
-    }
 
     override suspend fun getPokemons(
         limit: Int,
