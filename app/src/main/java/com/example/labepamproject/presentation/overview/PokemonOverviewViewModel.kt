@@ -146,7 +146,7 @@ class PokemonOverviewViewModel(
 
     private fun onPokemonResultState(itemList: List<Item.PokemonItem>) {
         if (!pokemonData.containsAll(itemList).also { Timber.d("Is new items: $it") }) {
-            pokemonData += itemList
+            pokemonData = (pokemonData + itemList).distinct()
         }
         _state.postValue(PokemonOverviewViewState.PokemonResultState(pokemonData))
         Timber.d("Pokemon loading is successful")

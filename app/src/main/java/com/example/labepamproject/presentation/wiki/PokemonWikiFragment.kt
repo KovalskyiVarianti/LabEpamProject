@@ -1,5 +1,7 @@
 package com.example.labepamproject.presentation.wiki
 
+import android.content.Intent
+import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.view.View
@@ -13,6 +15,7 @@ import com.example.labepamproject.R
 import com.example.labepamproject.databinding.FragmentPokemonWikiBinding
 import com.example.labepamproject.presentation.fromCapitalLetter
 import com.example.labepamproject.presentation.setFragmentTitle
+import timber.log.Timber
 
 class PokemonWikiFragment : Fragment(R.layout.fragment_pokemon_wiki) {
 
@@ -44,6 +47,15 @@ class PokemonWikiFragment : Fragment(R.layout.fragment_pokemon_wiki) {
                     view: WebView?,
                     request: WebResourceRequest?
                 ): Boolean {
+                    val currentUrl = request?.url.toString()
+                    val validUrl = wikiUrl + navArgs.pokemonName
+                    Timber.d("res url = $currentUrl")
+                    if (!currentUrl.equals(validUrl, ignoreCase = true)) {
+                        Timber.d("hello from chrome")
+                        val intent = Intent(Intent.ACTION_VIEW, Uri.parse(currentUrl))
+                        startActivity(intent)
+                        return true
+                    }
                     return false
                 }
             }

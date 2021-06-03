@@ -15,6 +15,7 @@ import com.example.labepamproject.presentation.getGenerationId
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import retrofit2.HttpException
 import timber.log.Timber
 
 class NetworkRoomPokemonRepository(
@@ -25,15 +26,7 @@ class NetworkRoomPokemonRepository(
     override suspend fun getPokemonByName(name: String): Result<PokemonEntity> =
         withContext(Dispatchers.IO) {
             try {
-                Result.Success(
-                    try {
-                        database.pokemonDetailDao.getPokemonByName(name).asEntity()
-                    } catch (e: Exception) {
-                        val pokemon = api.fetchPokemonInfo(name).asEntity()
-                        launch { database.pokemonDetailDao.insertAll(pokemon.asDatabaseEntity()) }
-                        pokemon
-                    }
-                )
+                Result.Success(getPokemonFromCacheElseApi(name)!!)
             } catch (e: Exception) {
                 Result.Error(e)
             }
@@ -42,22 +35,7 @@ class NetworkRoomPokemonRepository(
     override suspend fun getGenerations(): Result<List<GenerationEntity>> =
         withContext(Dispatchers.IO) {
             try {
-                Result.Success(
-                    try {
-                        val generations =
-                            database.generationDao.getGenerations().map { it.asEntity() }
-                                .also { Timber.d("hello from gen database") }
-                        if (generations.isEmpty()) throw Exception()
-                        generations
-                    } catch (e: Exception) {
-                        api.fetchGenerationList().results.map {
-                            val generation =
-                                api.fetchGenerationInfo(getGenerationId(it.name)).asEntity()
-                            launch { database.generationDao.insertAll(generation.asDatabaseEntity()) }
-                            generation.also { Timber.d("hello from gen network") }
-                        }
-                    }
-                )
+                Result.Success(getGenerationsFromCacheElseApi())
             } catch (e: Exception) {
                 Result.Error(e)
             }
@@ -70,19 +48,10 @@ class NetworkRoomPokemonRepository(
         withContext(Dispatchers.IO) {
             try {
                 Result.Success(
-                    try {
-                        database.pokemonDao.getPokemons().subList(offset, offset + limit)
-                            .map { database.pokemonDetailDao.getPokemonByName(it.name).asEntity() }
-                    } catch (e: Exception) {
-                        Timber.d(e)
-                        api.fetchPokemonList(limit, offset).results.map {
-                            launch { database.pokemonDao.insertAll(PokemonDatabaseEntity(it.name)) }
-                            val pokemon = api.fetchPokemonInfo(it.name).asEntity()
-                            launch { database.pokemonDetailDao.insertAll(pokemon.asDatabaseEntity()) }
-                            pokemon
-                        }
-                    }
-                )
+                    getPokemonNamesListFromCacheElseApi(
+                        limit,
+                        offset
+                    ).mapNotNull { getPokemonFromCacheElseApi(it) })
             } catch (e: Exception) {
                 Result.Error(e)
             }
@@ -95,39 +64,69 @@ class NetworkRoomPokemonRepository(
     ): Result<List<PokemonEntity>> = withContext(Dispatchers.IO) {
         try {
             Result.Success(
-                try {
-                    database.generationDao.getGenerationById(generationId).pokemons
-                        .subList(offset, offset + limit)
-                        .map { name ->
-                            database.pokemonDetailDao.getPokemonByName(name).asEntity()
-                        }
-                } catch (e: Exception) {
-                    api.fetchGenerationInfo(generationId).pokemons
-                        .getForPageFromNetwork(offset, offset + limit)
-                        .mapNotNull { name ->
-                            try {
-                                val pokemon = api.fetchPokemonInfo(name).asEntity()
-                                database.pokemonDetailDao.insertAll(pokemon.asDatabaseEntity())
-                                pokemon
-                            } catch (e: Exception) {
-                                null
-                            }
-                        }
-                }
+                database.generationDao.getGenerationById(generationId).pokemons
+                    .subList(offset, offset + limit)
+                    .mapNotNull { name ->
+                        getPokemonFromCacheElseApi(name)
+                    }
             )
         } catch (e: Exception) {
             Result.Error(e)
         }
     }
 
-    private fun List<PokemonPartialResponse>.getForPageFromNetwork(fromIndex: Int, toIndex: Int) =
+    private suspend fun getPokemonNamesListFromCacheElseApi(limit: Int, offset: Int) = try {
+        database.pokemonDao.getPokemons().subList(offset, offset + limit).map { it.name }
+    } catch (e: Exception) {
+        val pokemonNames = api.fetchPokemonList(limit, offset).results.map {
+            withContext(Dispatchers.IO) {
+                launch { database.pokemonDao.insertAll(PokemonDatabaseEntity(it.name)) }
+            }
+            it.name
+        }
+
+        pokemonNames
+    }
+
+    private suspend fun getPokemonFromCacheElseApi(name: String) =
+        try {
+            database.pokemonDetailDao.getPokemonByName(name).asEntity()
+        } catch (e: Exception) {
+            try {
+                val pokemon = api.fetchPokemonInfo(name).asEntity()
+                withContext(Dispatchers.IO) {
+                    launch { database.pokemonDetailDao.insertAll(pokemon.asDatabaseEntity()) }
+                }
+                pokemon
+            } catch (e: HttpException) {
+                null
+            }
+        }
+
+    private suspend fun getGenerationsFromCacheElseApi() = try {
+        val generations = database.generationDao.getGenerations()
+        if (generations.isEmpty()) throw IllegalStateException()
+        generations.map { it.asEntity() }
+    } catch (e: Exception) {
+        api.fetchGenerationList().results.map {
+            val generation = api.fetchGenerationInfo(getGenerationId(it.name)).asEntity()
+            withContext(Dispatchers.IO) {
+                launch {
+                    database.generationDao.insertAll(generation.asDatabaseEntity())
+                }
+            }
+            generation
+        }
+    }
+
+    private fun List<PokemonPartialResponse>.getForPage(fromIndex: Int, toIndex: Int) =
         when {
             fromIndex > size -> {
                 Timber.d("empty")
                 emptyList()
             }
-            toIndex > size -> subList(fromIndex, size).map { it.name }.also { Timber.d("to >") }
-            else -> subList(fromIndex, toIndex).map { it.name }.also { Timber.d("else >") }
+            toIndex > size -> subList(fromIndex, size).also { Timber.d("to >") }
+            else -> subList(fromIndex, toIndex).also { Timber.d("else >") }
         }
 
 }
