@@ -82,7 +82,7 @@ class NetworkRoomPokemonRepository(
             val pokemonList = mutableListOf<PokemonEntity>()
             val evolutionChainId =
                 getIdByUrl(api.fetchPokemonSpecies(name).evolutionChain.url).toInt()
-            val chain: ChainResponse? = api.fetchEvolutionChain(evolutionChainId).chain
+            val chain: ChainResponse = api.fetchEvolutionChain(evolutionChainId).chain
             var chains: List<ChainResponse?>? = listOf(chain)
             while (!chains.isNullOrEmpty()) {
                 pokemonList.add(getPokemonFromCacheElseApi(chains[0]!!.species.name)!!)
