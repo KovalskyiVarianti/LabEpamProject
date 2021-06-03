@@ -48,3 +48,6 @@ fun getGenerationId(text: String) = when (text) {
     "generation-viii" -> 8
     else -> 0
 }
+
+fun getIdByUrl(url: String) =
+    "/(\\d+?)/".toRegex().find(url)!!.groupValues[1]

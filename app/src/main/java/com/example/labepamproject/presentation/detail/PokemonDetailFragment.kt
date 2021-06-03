@@ -6,6 +6,7 @@ import android.view.Menu
 import android.view.MenuInflater
 import android.view.MenuItem
 import android.view.View
+import android.widget.ImageView
 import androidx.annotation.RequiresApi
 import androidx.core.app.ShareCompat
 import androidx.fragment.app.Fragment
@@ -17,6 +18,8 @@ import com.example.labepamproject.databinding.FragmentPokemonDetailBinding
 import com.example.labepamproject.domain.PokemonEntity
 import com.example.labepamproject.presentation.fromCapitalLetter
 import com.example.labepamproject.presentation.loadImage
+import com.example.labepamproject.presentation.overview.adapter.PokemonAdapter
+import com.example.labepamproject.presentation.overview.adapter.asItem
 import com.example.labepamproject.presentation.setFragmentTitle
 import com.google.android.material.snackbar.Snackbar
 import com.skydoves.progressview.ProgressView
@@ -29,6 +32,7 @@ class PokemonDetailFragment : Fragment(R.layout.fragment_pokemon_detail) {
     private var binding: FragmentPokemonDetailBinding? = null
     private val navArgs by navArgs<PokemonDetailFragmentArgs>()
     private val viewModel: PokemonDetailViewModel by viewModel { parametersOf(navArgs.pokemonName) }
+    private var pokemonAdapter: PokemonAdapter? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -44,7 +48,18 @@ class PokemonDetailFragment : Fragment(R.layout.fragment_pokemon_detail) {
         binding = FragmentPokemonDetailBinding.bind(view)
         setTransitionNameForImage()
         provideViewModel()
+        provideRecyclerView()
         setHasOptionsMenu(true)
+    }
+
+    private fun provideRecyclerView() {
+        binding?.let {
+            it.apply {
+                pokemonAdapter =
+                    PokemonAdapter() { imageView: ImageView, s: String, i: Int -> Timber.d("click") }
+                pokemonChains.adapter = pokemonAdapter
+            }
+        }
     }
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
@@ -97,6 +112,9 @@ class PokemonDetailFragment : Fragment(R.layout.fragment_pokemon_detail) {
         }
         is PokemonDetailViewState.ErrorState -> {
             showErrorMessage(state.errorMessage)
+        }
+        is PokemonDetailViewState.ChainResultState -> {
+            pokemonAdapter?.items = state.pokemonEntities.map { it.asItem() }
         }
     }
 

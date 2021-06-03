@@ -5,6 +5,7 @@ import com.example.labepamproject.data.database.PokemonDatabaseEntity
 import com.example.labepamproject.data.database.asDatabaseEntity
 import com.example.labepamproject.data.database.asEntity
 import com.example.labepamproject.data.network.PokedexApiService
+import com.example.labepamproject.data.network.dto.ChainResponse
 import com.example.labepamproject.data.network.dto.PokemonPartialResponse
 import com.example.labepamproject.data.network.dto.asEntity
 import com.example.labepamproject.domain.GenerationEntity
@@ -12,6 +13,7 @@ import com.example.labepamproject.domain.PokemonEntity
 import com.example.labepamproject.domain.PokemonRepository
 import com.example.labepamproject.domain.Result
 import com.example.labepamproject.presentation.getGenerationId
+import com.example.labepamproject.presentation.getIdByUrl
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -74,6 +76,26 @@ class NetworkRoomPokemonRepository(
             Result.Error(e)
         }
     }
+
+    override suspend fun getEvolutionChainForPokemon(name: String) = withContext(Dispatchers.IO) {
+        try {
+            val pokemonList = mutableListOf<PokemonEntity>()
+            val evolutionChainId =
+                getIdByUrl(api.fetchPokemonSpecies(name).evolutionChain.url).toInt()
+            val chain: ChainResponse? = api.fetchEvolutionChain(evolutionChainId).chain
+            var chains: List<ChainResponse?>? = listOf(chain)
+            while (!chains.isNullOrEmpty()) {
+                pokemonList.add(getPokemonFromCacheElseApi(chains[0]!!.species.name)!!)
+                chains = chains[0]?.nextChain
+            }
+            Result.Success(
+                pokemonList
+            )
+        } catch (e: Exception) {
+            Result.Error(e)
+        }
+    }
+
 
     private suspend fun getPokemonNamesListFromCacheElseApi(limit: Int, offset: Int) = try {
         database.pokemonDao.getPokemons().subList(offset, offset + limit).map { it.name }

@@ -10,4 +10,5 @@ interface PokemonRepository {
 
     suspend fun getPokemonByName(name: String): Result<PokemonEntity>
     suspend fun getGenerations(): Result<List<GenerationEntity>>
+    suspend fun getEvolutionChainForPokemon(name: String): Result<List<PokemonEntity>>
 }

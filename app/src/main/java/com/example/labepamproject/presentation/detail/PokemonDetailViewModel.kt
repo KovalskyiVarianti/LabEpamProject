@@ -9,6 +9,7 @@ import androidx.lifecycle.viewModelScope
 import com.example.labepamproject.domain.PokemonEntity
 import com.example.labepamproject.domain.PokemonRepository
 import com.example.labepamproject.domain.Result
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import timber.log.Timber
 
@@ -34,7 +35,11 @@ class PokemonDetailViewModel(
     }
 
     fun fetch() {
-        loadPokemon()
+        viewModelScope.launch {
+            loadPokemon()
+            delay(1)
+            loadChains()
+        }
     }
 
     private fun loadPokemon() {
@@ -53,6 +58,20 @@ class PokemonDetailViewModel(
         }
     }
 
+    private fun loadChains() {
+        onLoadState()
+        viewModelScope.launch {
+            when (val result = repository.getEvolutionChainForPokemon(pokemonName)) {
+                is Result.Success -> {
+                    onChainResultState(result.data)
+                }
+                is Result.Error -> {
+                    onErrorState(result.exception)
+                }
+            }
+        }
+    }
+
     fun buildShareIntent(intentBuilder: ShareCompat.IntentBuilder, text: String): Intent {
         return intentBuilder
             .setText(text)
@@ -62,6 +81,12 @@ class PokemonDetailViewModel(
 
     private fun onResultState(pokemon: PokemonEntity) {
         _state.value = (PokemonDetailViewState.ResultState(pokemon))
+        Timber.d("Items loading is successful")
+        Timber.d("Current state: ${_state.value}")
+    }
+
+    private fun onChainResultState(pokemons: List<PokemonEntity>) {
+        _state.value = PokemonDetailViewState.ChainResultState(pokemons)
         Timber.d("Items loading is successful")
         Timber.d("Current state: ${_state.value}")
     }

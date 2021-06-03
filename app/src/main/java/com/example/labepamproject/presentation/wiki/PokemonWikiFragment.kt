@@ -62,4 +62,9 @@ class PokemonWikiFragment : Fragment(R.layout.fragment_pokemon_wiki) {
             it.webview.loadUrl(wikiUrl + navArgs.pokemonName)
         }
     }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        binding = null
+    }
 }
